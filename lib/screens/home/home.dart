@@ -1,8 +1,8 @@
-import 'package:appdemo/screens/feed_screen/feed_sreen.dart';
+import 'package:appdemo/screens/home/home_tabfeed/feed_sreen.dart';
 import 'package:appdemo/screens/home/widgets/home_tabbar.dart';
-import 'package:appdemo/screens/home_screen/home_screens.dart';
-import 'package:appdemo/screens/profile_screen/profile_screen.dart';
-import 'package:appdemo/screens/setting/setting_screen.dart';
+import 'package:appdemo/screens/home/home_tabhome/home_screens.dart';
+import 'package:appdemo/screens/home/home_tabprofile/profile_screen.dart';
+import 'package:appdemo/screens/home/home_tabsetting/setting_screen.dart';
 import 'package:appdemo/widgets/main_app_bar.dart';
 import 'package:flutter/material.dart';
 

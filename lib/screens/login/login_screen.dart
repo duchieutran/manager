@@ -1,3 +1,4 @@
+import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/global/img_path.dart';
 import 'package:appdemo/screens/login/widgets/login_more.dart';
 import 'package:appdemo/screens/login/widgets/login_text.dart';
@@ -120,7 +121,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.of(context).pushNamed(AppRouter.home);
+                      },
                       child: Container(
                         height: 45,
                         decoration: const BoxDecoration(
