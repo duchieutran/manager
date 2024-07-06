@@ -2,7 +2,6 @@ import 'package:appdemo/global/img_path.dart';
 import 'package:appdemo/screens/login/widgets/login_more.dart';
 import 'package:appdemo/screens/login/widgets/login_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({super.key});
@@ -70,9 +69,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         label: Text(
                           "email",
                           style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.blue),
+                            fontSize: 19,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                         hintText: 'type your email',
                         prefixIcon: Icon(Icons.person),
@@ -95,9 +94,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         label: const Text(
                           "pass",
                           style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.blue),
+                            fontSize: 19,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                         hintText: 'type your pass',
                         border: const OutlineInputBorder(
