@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:appdemo/global/app_router.dart';
-import 'package:appdemo/models/model_user.dart';
+import '../../../global/app_router.dart';
+import '../../../models/model_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -17,7 +17,7 @@ class _HomeScreensState extends State<HomeScreens> {
 
   @override
   void initState() {
-    fetchAPI();
+    getLocalJson();
     super.initState();
   }
 
@@ -48,7 +48,7 @@ class _HomeScreensState extends State<HomeScreens> {
     );
   }
 
-  fetchAPI() async {
+  getLocalJson() async {
     final response = await rootBundle.loadString('assets/json/user_data.json');
     final List data = await json.decode(response);
     setState(() {

@@ -1,8 +1,8 @@
-import 'package:appdemo/models/model_user.dart';
-import 'package:appdemo/screens/show_info/widgets/show_info_avatar.dart';
-import 'package:appdemo/screens/show_info/widgets/show_info_button.dart';
-import 'package:appdemo/screens/show_info/widgets/show_info_text.dart';
-import 'package:appdemo/widgets/main_app_bar.dart';
+import '../../models/model_user.dart';
+import 'widgets/show_info_avatar.dart';
+import 'widgets/show_info_button.dart';
+import 'widgets/show_info_text.dart';
+import '../../widgets/main_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class ShowInfo extends StatelessWidget {

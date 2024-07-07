@@ -1,7 +1,7 @@
-import 'package:appdemo/global/app_router.dart';
-import 'package:appdemo/global/img_path.dart';
-import 'package:appdemo/screens/login/widgets/login_more.dart';
-import 'package:appdemo/screens/login/widgets/login_text.dart';
+import '../../global/app_router.dart';
+import '../../global/img_path.dart';
+import 'widgets/login_more.dart';
+import 'widgets/login_text.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {

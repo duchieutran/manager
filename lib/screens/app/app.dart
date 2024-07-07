@@ -1,4 +1,4 @@
-import 'package:appdemo/global/app_router.dart';
+import '../../global/app_router.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {

@@ -1,7 +1,7 @@
-import 'package:appdemo/models/model_user.dart';
-import 'package:appdemo/screens/home/home.dart';
-import 'package:appdemo/screens/login/login_screen.dart';
-import 'package:appdemo/screens/show_info/show_info.dart';
+import '../models/model_user.dart';
+import '../screens/home/home.dart';
+import '../screens/login/login_screen.dart';
+import '../screens/show_info/show_info.dart';
 import 'package:flutter/material.dart';
 
 class AppRouter {

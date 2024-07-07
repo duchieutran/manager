@@ -1,9 +1,9 @@
-import 'package:appdemo/screens/home/home_tabfeed/feed_sreen.dart';
-import 'package:appdemo/screens/home/widgets/home_tabbar.dart';
-import 'package:appdemo/screens/home/home_tabhome/home_screens.dart';
-import 'package:appdemo/screens/home/home_tabprofile/profile_screen.dart';
-import 'package:appdemo/screens/home/home_tabsetting/setting_screen.dart';
-import 'package:appdemo/widgets/main_app_bar.dart';
+import 'home_tabfeed/feed_sreen.dart';
+import 'widgets/home_tabbar.dart';
+import 'home_tabhome/home_screens.dart';
+import 'home_tabprofile/profile_screen.dart';
+import 'home_tabsetting/setting_screen.dart';
+import '../../widgets/main_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatelessWidget {
