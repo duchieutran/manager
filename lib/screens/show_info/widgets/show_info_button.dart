@@ -7,10 +7,12 @@ class ShowInfoButton extends StatelessWidget {
       required this.bgColor,
       this.frColor = Colors.white,
       this.size = 20,
-      this.func});
+      this.func,
+      required this.icon});
   final Color bgColor;
   final Color frColor;
   final String text;
+  final IconData icon;
   final double size;
   final Function? func;
 
@@ -25,9 +27,15 @@ class ShowInfoButton extends StatelessWidget {
             foregroundColor: frColor,
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(10)))),
-        child: Text(
-          text,
-          style: TextStyle(fontSize: size, fontWeight: FontWeight.bold),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon),
+            Text(
+              text,
+              style: TextStyle(fontSize: size, fontWeight: FontWeight.bold),
+            )
+          ],
         ));
   }
 }

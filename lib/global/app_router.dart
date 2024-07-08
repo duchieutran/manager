@@ -1,3 +1,5 @@
+import 'package:appdemo/screens/edit_info/edit_info.dart';
+
 import '../models/model_user.dart';
 import '../screens/home/home.dart';
 import '../screens/login/login_screen.dart';
@@ -22,6 +24,8 @@ class AppRouter {
         return LoginScreen();
       case home:
         return const Home();
+      case editinfo:
+        return const EditInfo();
       case showinfo:
         return ShowInfo(
           user: agruments as ModelUser,
@@ -35,4 +39,5 @@ class AppRouter {
   static const String login = '/';
   static const String home = '/home';
   static const String showinfo = '/showinfo';
+  static const String editinfo = '/editinfo';
 }

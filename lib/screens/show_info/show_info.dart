@@ -13,7 +13,7 @@ class ShowInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainAppBar(
-        title: "Thông Tin Cá Nhân",
+        title: "INFOMATION",
         fontSize: 25,
         colorLeading: Colors.black,
         kToolbarHeight: 80,
@@ -28,7 +28,7 @@ class ShowInfo extends StatelessWidget {
       body: Stack(children: [
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
-          padding: const EdgeInsets.symmetric(vertical: 80),
+          padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 20),
           decoration: BoxDecoration(
               color: const Color.fromARGB(255, 250, 207, 250),
               borderRadius: const BorderRadius.all(Radius.circular(20)),
@@ -61,18 +61,30 @@ class ShowInfo extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 30),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ShowInfoButton(
+                      icon: Icons.mail,
                       text: "email",
                       bgColor: Colors.blue,
                     ),
                     ShowInfoButton(
+                      icon: Icons.phone,
                       text: "phone",
                       bgColor: Colors.red,
                     )
                   ],
                 ),
+              ),
+              const ShowInfoButton(
+                text: "Edit Infomation",
+                bgColor: Colors.green,
+                icon: Icons.edit,
+              ),
+              const ShowInfoButton(
+                text: "Delete Profile",
+                bgColor: Colors.red,
+                icon: Icons.delete,
               )
             ],
           ),

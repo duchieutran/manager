@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:appdemo/screens/home/home_tabfeed/widgets/feed_textlogo.dart';
-
+import 'package:appdemo/services/api_service/home_sevice.dart';
 import '../../../models/model_user.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class FeedSreen extends StatefulWidget {
   const FeedSreen({super.key});
@@ -18,11 +15,25 @@ class _FeedSreenState extends State<FeedSreen> {
   List<ModelUser> users = [];
   bool _isLoading = true;
 
+  getData() async {
+    try {
+      final List<ModelUser> tmp = await HomeSevice().getData();
+      setState(() {
+        users = tmp;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (_isLoading) {
-      getLocalJson();
+      getData();
     }
   }
 
@@ -94,22 +105,5 @@ class _FeedSreenState extends State<FeedSreen> {
                 },
                 options:
                     CarouselOptions(enableInfiniteScroll: true, height: 230));
-  }
-
-  getLocalJson() async {
-    try {
-      final response =
-          await rootBundle.loadString('assets/json/user_data.json');
-      final List data = json.decode(response);
-      setState(() {
-        users = data.map((e) => ModelUser.fromJSON(e)).toList();
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      throw 'Error loading JSON: $e';
-    }
   }
 }

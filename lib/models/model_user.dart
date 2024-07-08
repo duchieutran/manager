@@ -11,7 +11,7 @@ class ModelUser {
       required this.age,
       required this.address,
       required this.email,
-      required this.id,
+      this.id = '',
       required this.image});
 
   ModelUser.fromJSON(Map<String, dynamic> json)
@@ -21,4 +21,15 @@ class ModelUser {
         email = json['email'],
         image = json['image'],
         id = json['id'];
+
+  Map<String, dynamic> toJSON() {
+    return {
+      'name': name,
+      'age': age,
+      'address': address,
+      'email': email,
+      'id': id,
+      'image': image
+    };
+  }
 }
