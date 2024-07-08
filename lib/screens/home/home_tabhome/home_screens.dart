@@ -4,7 +4,8 @@ import '../../../models/model_user.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreens extends StatefulWidget {
-  const HomeScreens({super.key});
+  const HomeScreens({super.key, this.isLoading = true});
+  final bool isLoading;
 
   @override
   State<HomeScreens> createState() => _HomeScreensState();
@@ -12,10 +13,11 @@ class HomeScreens extends StatefulWidget {
 
 class _HomeScreensState extends State<HomeScreens> {
   List<ModelUser> users = [];
-  bool _isloading = true;
+  late bool _isloading;
 
   @override
   void initState() {
+    _isloading = widget.isLoading;
     didChangeDependencies();
     super.initState();
   }

@@ -14,14 +14,12 @@ class ShowInfoButton extends StatelessWidget {
   final String text;
   final IconData icon;
   final double size;
-  final Function? func;
+  final VoidCallback? func;
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-        onPressed: () {
-          func;
-        },
+        onPressed: func,
         style: ElevatedButton.styleFrom(
             backgroundColor: bgColor,
             foregroundColor: frColor,

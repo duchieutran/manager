@@ -8,7 +8,7 @@ abstract class HomeReponsitory {
   Future<List<ModelUser>> searchData();
 
   // xoa gia tri
-  Future<ModelUser> deteleData();
+  Future<bool> deteleData(String id);
 
   // update gia tri
   Future<ModelUser> updateData();

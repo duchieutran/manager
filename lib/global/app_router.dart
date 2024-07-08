@@ -23,7 +23,7 @@ class AppRouter {
       case login:
         return LoginScreen();
       case home:
-        return const Home();
+        return const Home() ;
       case editinfo:
         return const EditInfo();
       case showinfo:

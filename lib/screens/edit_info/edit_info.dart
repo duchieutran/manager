@@ -1,3 +1,4 @@
+import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/screens/edit_info/widgets/edit_textfield.dart';
 import 'package:appdemo/services/api_service/home_sevice.dart';
@@ -27,6 +28,11 @@ class _EditInfoState extends State<EditInfo> {
       appBar: MainAppBar(
         title: "EDIT INFO",
         fontSize: 25,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () =>
+              Navigator.of(context).pushNamed(AppRouter.home, arguments: false),
+        ),
         colorLeading: Colors.black,
         kToolbarHeight: 80,
         flexiblaSpace: Container(
@@ -96,7 +102,6 @@ class _EditInfoState extends State<EditInfo> {
   }
 
   Future<void> _addUser() async {
-    // Cập nhật giá trị của user từ các TextEditingController
     user = ModelUser(
       name: nameController.text,
       email: emailController.text,
@@ -107,8 +112,8 @@ class _EditInfoState extends State<EditInfo> {
     );
 
     try {
-      // Gọi API để tạo dữ liệu mới
       await HomeSevice().createData(user);
+
       print('User created successfully');
     } catch (e) {
       print('Failed to create user: $e');

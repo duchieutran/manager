@@ -1,3 +1,5 @@
+import 'package:appdemo/global/app_router.dart';
+import 'package:appdemo/services/api_service/home_sevice.dart';
 import '../../models/model_user.dart';
 import 'widgets/show_info_avatar.dart';
 import 'widgets/show_info_button.dart';
@@ -81,7 +83,8 @@ class ShowInfo extends StatelessWidget {
                 bgColor: Colors.green,
                 icon: Icons.edit,
               ),
-              const ShowInfoButton(
+              ShowInfoButton(
+                func: () => _showConfirmationDialog(context),
                 text: "Delete Profile",
                 bgColor: Colors.red,
                 icon: Icons.delete,
@@ -91,6 +94,34 @@ class ShowInfo extends StatelessWidget {
         ),
         ShowInfoAvatar(image: user.image)
       ]),
+    );
+  }
+
+  void _showConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmation Dialog'),
+          content: const Text('Are you sure you want to delete ^^ ?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                HomeSevice().deteleData(user.id);
+                Navigator.of(context)
+                    .pushNamed(AppRouter.home, arguments: true);
+              },
+              child: const Text('Confirm'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

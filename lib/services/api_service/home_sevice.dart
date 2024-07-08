@@ -26,9 +26,25 @@ class HomeSevice extends HomeReponsitory {
   }
 
   @override
-  Future<ModelUser> deteleData() {
-    // TODO: implement deteleData
-    throw UnimplementedError();
+  Future<bool> deteleData(String id) async {
+    try {
+      final response = await http.delete(
+        Uri.parse(
+            "https://66879a5f0bc7155dc0184943.mockapi.io/api/v1/users/user/$id"),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode == 200) {
+        print('Delete success');
+        return true;
+      } else {
+        print('Delete failed with status: ${response.statusCode}');
+        throw Exception('Failed to delete user');
+      }
+    } catch (e) {
+      throw UnimplementedError();
+    }
   }
 
   @override
