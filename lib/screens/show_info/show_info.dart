@@ -60,17 +60,19 @@ class ShowInfo extends StatelessWidget {
                 size: 20,
                 fontWeight: FontWeight.bold,
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 30),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 30),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     ShowInfoButton(
+                      func: () {},
                       icon: Icons.mail,
                       text: "email",
                       bgColor: Colors.blue,
                     ),
                     ShowInfoButton(
+                      func: () {},
                       icon: Icons.phone,
                       text: "phone",
                       bgColor: Colors.red,
@@ -78,7 +80,8 @@ class ShowInfo extends StatelessWidget {
                   ],
                 ),
               ),
-              const ShowInfoButton(
+              ShowInfoButton(
+                func: () {},
                 text: "Edit Infomation",
                 bgColor: Colors.green,
                 icon: Icons.edit,

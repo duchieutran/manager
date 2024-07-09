@@ -65,9 +65,31 @@ class HomeSevice extends HomeReponsitory {
   }
 
   @override
-  Future<List<ModelUser>> searchData() {
-    // TODO: implement searchData
-    throw UnimplementedError();
+  Future<List<ModelUser>> searchData(String key, String value) async {
+    final tmpValue = value.toLowerCase();
+    try {
+      final response = await http.get(Uri.parse(
+          "https://66879a5f0bc7155dc0184943.mockapi.io/api/v1/users/user/?$key=$value"));
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        List<dynamic> data = await json.decode(response.body);
+        List<ModelUser> users = data
+            .map((value) => ModelUser.fromJSON(value))
+            .where((e) =>
+                e.id.toLowerCase().contains(tmpValue) ||
+                e.name.toLowerCase().contains(tmpValue) ||
+                e.age.toString().contains(tmpValue) ||
+                e.address.toLowerCase().contains(tmpValue) ||
+                e.email.toLowerCase().contains(tmpValue))
+            .toList();
+
+        return users;
+      } else {
+        throw "No value ! ";
+      }
+    } catch (e) {
+      throw e;
+    }
   }
 
   @override

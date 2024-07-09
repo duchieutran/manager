@@ -5,7 +5,7 @@ abstract class HomeReponsitory {
   Future<List<ModelUser>> getData();
 
   // tim kiem gia tri
-  Future<List<ModelUser>> searchData();
+  Future<List<ModelUser>> searchData(String key, String value);
 
   // xoa gia tri
   Future<bool> deteleData(String id);
