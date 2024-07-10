@@ -118,7 +118,7 @@ class _HomeScreensState extends State<HomeScreens> {
         ),
         Positioned(
           bottom: 30,
-          right: 50,
+          right: 30,
           child: ClipOval(
             child: FloatingActionButton(
               onPressed: () {

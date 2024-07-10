@@ -1,13 +1,14 @@
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
-import 'package:appdemo/screens/add_info/widgets/edit_textfield.dart';
+import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
 import 'package:appdemo/services/api_service/home_sevice.dart';
 import 'package:appdemo/widgets/main_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class AddInfo extends StatefulWidget {
-  const AddInfo({super.key, });
-  
+  const AddInfo({
+    super.key,
+  });
 
   @override
   State<AddInfo> createState() => _AddInfoState();
@@ -96,10 +97,28 @@ class _AddInfoState extends State<AddInfo> {
               ],
             ),
           ),
-          // ShowInfoAvatar(image: user.image)
+          Align(
+            child: Container(
+                margin: const EdgeInsets.all(5),
+                width: 90,
+                height: 90,
+                decoration: BoxDecoration(
+                    color: const Color.fromARGB(255, 101, 179, 243),
+                    border: Border.all(width: 2),
+                    borderRadius: const BorderRadius.all(Radius.circular(45))),
+                child: const Icon(
+                  Icons.add,
+                  size: 80,
+                  color: Colors.white,
+                )),
+          ),
         ]),
       ),
     );
+  }
+
+  void _submit() {
+    
   }
 
   Future<void> _addUser() async {

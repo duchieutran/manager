@@ -1,6 +1,6 @@
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
-import 'package:appdemo/screens/add_info/widgets/edit_textfield.dart';
+import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
 import 'package:appdemo/services/api_service/home_sevice.dart';
 import 'package:appdemo/widgets/main_app_bar.dart';
 import 'package:flutter/material.dart';
