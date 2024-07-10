@@ -1,4 +1,3 @@
-import 'package:appdemo/screens/home/home_tabhome/widgets/home_screens_search.dart';
 import 'package:appdemo/services/api_service/home_sevice.dart';
 import 'package:flutter/material.dart';
 import 'package:appdemo/models/model_user.dart';
@@ -60,11 +59,28 @@ class _HomeScreensState extends State<HomeScreens> {
       body: Stack(children: [
         Column(
           children: [
-            HomeScreensSearch(
-                filterFunc: _showFilterDialog,
-                searchFunc: (value) {
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: IconButton(
+                    icon: const Icon(Icons.filter_list),
+                    onPressed: () {
+                      _showFilterDialog(context);
+                    },
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+                onChanged: (value) {
                   _searchShowInfo(value);
-                }),
+                },
+              ),
+            ),
             Expanded(
               flex: 9,
               child: _isLoading
@@ -106,7 +122,7 @@ class _HomeScreensState extends State<HomeScreens> {
           child: ClipOval(
             child: FloatingActionButton(
               onPressed: () {
-                Navigator.of(context).pushNamed(AppRouter.editinfo);
+                Navigator.of(context).pushNamed(AppRouter.addinfo);
               },
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,

@@ -5,41 +5,29 @@ import 'package:appdemo/services/api_service/home_sevice.dart';
 import 'package:appdemo/widgets/main_app_bar.dart';
 import 'package:flutter/material.dart';
 
-class EditInfo extends StatefulWidget {
-  const EditInfo({super.key, required this.user});
-  final ModelUser user;
+class AddInfo extends StatefulWidget {
+  const AddInfo({super.key, });
+  
 
   @override
-  State<EditInfo> createState() => _EditInfoState();
+  State<AddInfo> createState() => _AddInfoState();
 }
 
-class _EditInfoState extends State<EditInfo> {
-  late ModelUser _user;
-  late TextEditingController nameController;
-  late TextEditingController emailController;
-  late TextEditingController addressController;
-  late TextEditingController imageController;
-  late TextEditingController idController;
-  late TextEditingController ageController;
-  late ModelUser _userUpdate;
+class _AddInfoState extends State<AddInfo> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController imageController = TextEditingController();
+  TextEditingController idController = TextEditingController();
+  TextEditingController ageController = TextEditingController();
 
-  @override
-  void initState() {
-    _user = widget.user;
-    nameController = TextEditingController(text: _user.name);
-    emailController = TextEditingController(text: _user.email);
-    addressController = TextEditingController(text: _user.address);
-    imageController = TextEditingController(text: _user.image);
-    idController = TextEditingController(text: _user.id);
-    ageController = TextEditingController(text: '${_user.age}');
-    super.initState();
-  }
+  late ModelUser user;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainAppBar(
-        title: "Edit Infomation",
+        title: "Add Infomation",
         fontSize: 25,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
@@ -102,9 +90,7 @@ class _EditInfoState extends State<EditInfo> {
                     textInputType: TextInputType.name),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                    _updateData();
-                  },
+                  onPressed: _addUser,
                   child: const Text('Submit'),
                 ),
               ],
@@ -116,15 +102,20 @@ class _EditInfoState extends State<EditInfo> {
     );
   }
 
-  Future<void> _updateData() async {
-    _userUpdate = ModelUser(
-        id: _user.id,
-        name: nameController.text,
-        age: int.tryParse(ageController.text) ?? 0,
-        address: addressController.text,
-        email: emailController.text,
-        image: imageController.text);
+  Future<void> _addUser() async {
+    user = ModelUser(
+      name: nameController.text,
+      email: emailController.text,
+      address: addressController.text,
+      image: imageController.text,
+      id: '',
+      age: int.tryParse(ageController.text) ?? 0,
+    );
 
-    await HomeSevice().updateData(_userUpdate.id, _userUpdate.toJSON());
+    try {
+      await HomeSevice().createData(user);
+    } catch (e) {
+      rethrow;
+    }
   }
 }

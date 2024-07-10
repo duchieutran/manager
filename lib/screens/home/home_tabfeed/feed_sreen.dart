@@ -16,17 +16,11 @@ class _FeedSreenState extends State<FeedSreen> {
   bool _isLoading = true;
 
   getData() async {
-    try {
-      final List<ModelUser> tmp = await HomeSevice().getData();
-      setState(() {
-        users = tmp;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-    }
+    final List<ModelUser> tmp = await HomeSevice().getData();
+    setState(() {
+      users = tmp;
+      _isLoading = false;
+    });
   }
 
   @override

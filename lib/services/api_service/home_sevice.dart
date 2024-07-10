@@ -36,10 +36,8 @@ class HomeSevice extends HomeReponsitory {
         },
       );
       if (response.statusCode == 200) {
-        print('Delete success');
         return true;
       } else {
-        print('Delete failed with status: ${response.statusCode}');
         throw Exception('Failed to delete user');
       }
     } catch (e) {
@@ -60,7 +58,7 @@ class HomeSevice extends HomeReponsitory {
         throw Exception('Failed to load data');
       }
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
@@ -70,7 +68,6 @@ class HomeSevice extends HomeReponsitory {
     try {
       final response = await http.get(Uri.parse(
           "https://66879a5f0bc7155dc0184943.mockapi.io/api/v1/users/user/?$key=$value"));
-      print(response.statusCode);
       if (response.statusCode == 200) {
         List<dynamic> data = await json.decode(response.body);
         List<ModelUser> users = data
@@ -88,13 +85,29 @@ class HomeSevice extends HomeReponsitory {
         throw "No value ! ";
       }
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 
   @override
-  Future<ModelUser> updateData() {
-    // TODO: implement updateData
-    throw UnimplementedError();
+  Future<bool> updateData(String id, Map<String, dynamic> data) async {
+
+    try {
+      final response = await http.put(
+          Uri.parse(
+              'https://66879a5f0bc7155dc0184943.mockapi.io/api/v1/users/user/$id'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8'
+          },
+          body: jsonEncode(data));
+      if (response.statusCode == 200) {
+        
+        return true;
+      } else {
+        throw 'Fail !';
+      }
+    } catch (e) {
+      rethrow;
+    }
   }
 }

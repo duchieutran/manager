@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class HomeScreensSearch extends StatelessWidget {
   const HomeScreensSearch(
       {super.key, required this.filterFunc, required this.searchFunc});
-  final Function? filterFunc;
+  final VoidCallback filterFunc;
   final Function(String)? searchFunc;
 
   @override

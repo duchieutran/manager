@@ -81,7 +81,8 @@ class ShowInfo extends StatelessWidget {
                 ),
               ),
               ShowInfoButton(
-                func: () {},
+                func: () => Navigator.of(context)
+                    .pushNamed(AppRouter.editinfo, arguments: user),
                 text: "Edit Infomation",
                 bgColor: Colors.green,
                 icon: Icons.edit,
