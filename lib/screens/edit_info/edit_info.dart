@@ -1,8 +1,10 @@
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
+import 'package:appdemo/screens/home/home_tabhome/widgets/check_img.dart';
 import 'package:appdemo/services/api_service/home_sevice.dart';
 import 'package:appdemo/widgets/main_app_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class EditInfo extends StatefulWidget {
@@ -73,46 +75,123 @@ class _EditInfoState extends State<EditInfo> {
                 EditTextfield(
                     controller: nameController,
                     title: 'Name',
-                    hindText: 'Type your name',
+                    hintText: 'Type your name',
                     icon: const Icon(Icons.person),
                     textInputType: TextInputType.name),
                 EditTextfield(
                     controller: ageController,
                     title: 'Age',
-                    hindText: 'Type your age',
-                    icon: const Icon(Icons.person),
+                    hintText: 'Type your age',
+                    icon: const Icon(Icons.cake),
                     textInputType: TextInputType.number),
                 EditTextfield(
                     controller: addressController,
                     title: 'Address',
-                    hindText: 'Type your address',
-                    icon: const Icon(Icons.person),
+                    hintText: 'Type your address',
+                    icon: const Icon(Icons.location_city),
                     textInputType: TextInputType.name),
                 EditTextfield(
                     controller: emailController,
                     title: 'Email',
-                    hindText: 'Type your email',
-                    icon: const Icon(Icons.person),
+                    hintText: 'Type your email',
+                    icon: const Icon(Icons.email),
                     textInputType: TextInputType.name),
                 EditTextfield(
                     controller: imageController,
                     title: 'Image',
-                    hindText: 'Type your image',
-                    icon: const Icon(Icons.person),
+                    hintText: 'Type your image',
+                    icon: const Icon(Icons.image),
                     textInputType: TextInputType.name),
                 const SizedBox(height: 20),
                 ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor:
+                          const Color.fromARGB(255, 101, 179, 243)),
                   onPressed: () {
-                    _updateData();
+                    _checkValidate();
                   },
-                  child: const Text('Submit'),
+                  child: const Text(
+                    'Submit',
+                    style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white),
+                  ),
                 ),
               ],
             ),
           ),
-          // ShowInfoAvatar(image: user.image)
+          Align(
+            child: Container(
+              margin: const EdgeInsets.all(5),
+              width: 90,
+              height: 90,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 101, 179, 243),
+                border: Border.all(width: 2),
+                borderRadius: const BorderRadius.all(Radius.circular(45)),
+              ),
+              child: const Icon(
+                Icons.edit,
+                size: 80,
+                color: Colors.white,
+              ),
+            ),
+          ),
         ]),
       ),
+    );
+  }
+
+  Future<void> _checkValidate() async {
+    if (nameController.text.isEmpty ||
+        emailController.text.isEmpty ||
+        addressController.text.isEmpty ||
+        imageController.text.isEmpty ||
+        ageController.text.runtimeType != int) {
+      if (mounted) {
+        _showDialog(
+            title: "Validation Error", content: "Please fill in all fields.");
+      }
+    } else {
+      if (!await CheckImg().loadImg(imageController.text)) {
+        if (mounted) {
+          _showDialog(title: "Error", content: "Invalid image URL.");
+        }
+      } else {
+        await _updateData();
+        if (mounted) {
+          _showDialog(
+              title: "Success",
+              content: "Add profile complete.",
+              action: () {
+                Navigator.of(context)
+                    .pushNamed(AppRouter.home, arguments: false);
+              });
+        }
+      }
+    }
+  }
+
+  void _showDialog(
+      {required String title, required String content, VoidCallback? action}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (action != null) action();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -124,7 +203,6 @@ class _EditInfoState extends State<EditInfo> {
         address: addressController.text,
         email: emailController.text,
         image: imageController.text);
-
     await HomeSevice().updateData(_userUpdate.id, _userUpdate.toJSON());
   }
 }

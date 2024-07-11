@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 
 class EditTextfield extends StatelessWidget {
-  const EditTextfield(
-      {super.key,
-      required this.controller,
-      required this.title,
-      required this.hindText,
-      required this.icon,
-      required this.textInputType});
+  const EditTextfield({
+    super.key,
+    required this.controller,
+    required this.title,
+    required this.hintText,
+    required this.icon,
+    required this.textInputType,
+  });
 
   final TextEditingController controller;
   final String title;
-  final String hindText;
+  final String hintText;
   final Widget? icon;
   final TextInputType textInputType;
 
@@ -30,9 +31,8 @@ class EditTextfield extends StatelessWidget {
               fontWeight: FontWeight.w400,
             ),
           ),
-          hintText: hindText,
+          hintText: hintText,
           prefixIcon: icon,
-          // suffixIcon: Icon(Icons.check),
           border: const OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(15))),
         ),

@@ -1,5 +1,6 @@
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/services/api_service/home_sevice.dart';
+import 'package:flutter/cupertino.dart';
 import '../../models/model_user.dart';
 import 'widgets/show_info_avatar.dart';
 import 'widgets/show_info_button.dart';
@@ -105,23 +106,22 @@ class ShowInfo extends StatelessWidget {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Confirmation Dialog'),
-          content: const Text('Are you sure you want to delete ^^ ?'),
+        return CupertinoAlertDialog(
+          title: const Text("Wowww"),
+          content: const Text("Are you sure you want to delete =)) ?"),
           actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
+            CupertinoDialogAction(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Cancel')),
+            CupertinoDialogAction(
+              child: const Text("OK"),
               onPressed: () {
                 HomeSevice().deteleData(user.id);
                 Navigator.of(context)
                     .pushNamed(AppRouter.home, arguments: true);
               },
-              child: const Text('Confirm'),
             ),
           ],
         );
