@@ -1,8 +1,8 @@
-import 'home_tabfeed/feed_sreen.dart';
+import 'home_tabfeed/home_tabfeed.dart';
 import 'widgets/home_tabbar.dart';
-import 'home_tabhome/home_screens.dart';
-import 'home_tabprofile/profile_screen.dart';
-import 'home_tabsetting/setting_screen.dart';
+import 'home_tabhome/home_tabhome.dart';
+import 'home_tabprofile/home_tabprofile.dart';
+import 'home_tabsetting/home_tabsetting.dart';
 import '../../widgets/main_app_bar.dart';
 import 'package:flutter/material.dart';
 

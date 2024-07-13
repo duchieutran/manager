@@ -45,4 +45,5 @@ class AppRouter {
   static const String showinfo = '/showinfo';
   static const String editinfo = '/editinfo';
   static const String addinfo = '/addinfo';
+  
 }

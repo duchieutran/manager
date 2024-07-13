@@ -8,7 +8,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
       this.centerTitle = true,
       required this.title,
       this.sizeLeading = 24,
-      this.colorLeading = Colors.white,
+      this.colorLeading = Colors.white, 
       this.fontSize = 16,
       this.fontWeight = FontWeight.bold,
       this.action,
