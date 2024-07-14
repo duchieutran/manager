@@ -17,14 +17,24 @@ class AddInfo extends StatefulWidget {
 }
 
 class _AddInfoState extends State<AddInfo> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController addressController = TextEditingController();
-  TextEditingController imageController = TextEditingController();
-  TextEditingController idController = TextEditingController();
-  TextEditingController ageController = TextEditingController();
+  // TODO : da xu ly
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _imageController = TextEditingController();
+  final TextEditingController _idController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
 
-  late ModelUser user;
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _addressController.dispose();
+    _imageController.dispose();
+    _idController.dispose();
+    _ageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,35 +76,35 @@ class _AddInfoState extends State<AddInfo> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   EditTextfield(
-                    controller: nameController,
+                    controller: _nameController,
                     title: 'Name',
                     hintText: 'Type your name',
                     icon: const Icon(Icons.person),
                     textInputType: TextInputType.name,
                   ),
                   EditTextfield(
-                    controller: ageController,
+                    controller: _ageController,
                     title: 'Age',
                     hintText: 'Type your age',
                     icon: const Icon(Icons.cake),
                     textInputType: TextInputType.number,
                   ),
                   EditTextfield(
-                    controller: addressController,
+                    controller: _addressController,
                     title: 'Address',
                     hintText: 'Type your address',
                     icon: const Icon(Icons.location_city),
                     textInputType: TextInputType.text,
                   ),
                   EditTextfield(
-                    controller: emailController,
+                    controller: _emailController,
                     title: 'Email',
                     hintText: 'Type your email',
                     icon: const Icon(Icons.email),
                     textInputType: TextInputType.emailAddress,
                   ),
                   EditTextfield(
-                    controller: imageController,
+                    controller: _imageController,
                     title: 'Image',
                     hintText: 'Type your image',
                     icon: const Icon(Icons.image),
@@ -119,6 +129,7 @@ class _AddInfoState extends State<AddInfo> {
                 ],
               ),
             ),
+            // TODO: da tim hieu
             Align(
               child: Container(
                 margin: const EdgeInsets.all(5),
@@ -143,16 +154,17 @@ class _AddInfoState extends State<AddInfo> {
   }
 
   Future<void> _checkValidate() async {
-    if (nameController.text.isEmpty ||
-        emailController.text.isEmpty ||
-        addressController.text.isEmpty ||
-        imageController.text.isEmpty) {
+    if (_nameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _addressController.text.isEmpty ||
+        _imageController.text.isEmpty) {
+      // TODO: check mounted
       if (mounted) {
         _showDialog(
             title: "Validation Error", content: "Please fill in all fields.");
       }
     } else {
-      if (!await CheckImg().loadImg(imageController.text)) {
+      if (!await CheckImg().loadImg(_imageController.text)) {
         if (mounted) {
           _showDialog(title: "Error", content: "Invalid image URL.");
         }
@@ -203,13 +215,14 @@ class _AddInfoState extends State<AddInfo> {
   }
 
   Future<void> _addUser() async {
-    user = ModelUser(
-      name: nameController.text,
-      email: emailController.text,
-      address: addressController.text,
-      image: imageController.text,
+    // TODO:
+    ModelUser user = ModelUser(
+      name: _nameController.text,
+      email: _emailController.text,
+      address: _addressController.text,
+      image: _imageController.text,
       id: '',
-      age: int.tryParse(ageController.text) ?? 0,
+      age: int.tryParse(_ageController.text) ?? 0,
     );
 
     try {

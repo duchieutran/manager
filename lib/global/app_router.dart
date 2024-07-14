@@ -23,7 +23,9 @@ class AppRouter {
       case login:
         return LoginScreen();
       case home:
-        return const Home();
+        return Home(
+          isLoading: agruments as bool,
+        );
       case editinfo:
         return EditInfo(
           user: agruments as ModelUser,
@@ -45,5 +47,4 @@ class AppRouter {
   static const String showinfo = '/showinfo';
   static const String editinfo = '/editinfo';
   static const String addinfo = '/addinfo';
-  
 }

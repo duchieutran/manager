@@ -18,8 +18,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               Stack(
                 children: [
-                  Container(
-                    // width: 300.0,
+                  SizedBox(
+                    width: 300.0,
                     height: 240.0,
                     child: FittedBox(
                       fit: BoxFit.cover,

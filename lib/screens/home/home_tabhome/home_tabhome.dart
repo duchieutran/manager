@@ -1,17 +1,18 @@
 import 'package:appdemo/services/api_service/home_sevice.dart';
+import 'package:appdemo/widgets/main_novalue.dart';
+import 'package:appdemo/widgets/main_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:appdemo/models/model_user.dart';
 import '../../../global/app_router.dart';
 
 class HomeScreens extends StatefulWidget {
-  const HomeScreens({super.key, this.isLoading = true});
+  const HomeScreens({super.key, required this.isLoading});
 
   final bool isLoading;
 
   @override
   State<HomeScreens> createState() => _HomeScreensState();
 }
-
 
 class _HomeScreensState extends State<HomeScreens> {
   List<ModelUser> filteredUsers = [];
@@ -23,17 +24,20 @@ class _HomeScreensState extends State<HomeScreens> {
   void initState() {
     _isLoading = widget.isLoading;
     _searchController = TextEditingController();
-    didChangeDependencies();
+    // didChangeDependencies();
+    getData();
     super.initState();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_isLoading) {
-      getData();
-    }
-  }
+  // TODO: da xu ly
+
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   if (_isLoading) {
+  //     getData();
+  //   }
+  // }
 
   Future<void> _searchShowInfo(String value) async {
     try {
@@ -57,8 +61,7 @@ class _HomeScreensState extends State<HomeScreens> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(children: [
-        Column(
+        body: Column(
           children: [
             Padding(
               padding: const EdgeInsets.all(8),
@@ -83,59 +86,46 @@ class _HomeScreensState extends State<HomeScreens> {
               ),
             ),
             Expanded(
-              flex: 9,
-              child: _isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator(),
-                    )
-                  : filteredUsers.isEmpty
-                      ? const Center(
-                          child: Text("No value ! "),
-                        )
-                      : ListView.builder(
-                          itemCount: filteredUsers.length,
-                          itemBuilder: (context, index) {
-                            final user = filteredUsers[index];
-                            return ListTile(
-                              onTap: () => Navigator.of(context).pushNamed(
-                                AppRouter.showinfo,
-                                arguments: user,
-                              ),
-                              leading: ClipOval(
-                                child: Image(
-                                  image: NetworkImage(user.image),
-                                  fit: BoxFit.cover,
-                                  width: 50,
-                                  height: 50,
-                                ),
-                              ),
-                              title: Text(user.name),
-                              subtitle: Text(user.email),
-                            );
-                          },
-                        ),
+              // TODO: // da tim hieu
+              // flex: 9, // nhieu hon 2 phan tu thi dung flex
+              child: filteredUsers.isEmpty
+                  ? const MainProgress()
+                  : ListView.builder(
+                      itemCount: filteredUsers.length,
+                      itemBuilder: (context, index) {
+                        final user = filteredUsers[index];
+                        return ListTile(
+                          onTap: () => Navigator.of(context).pushNamed(
+                            AppRouter.showinfo,
+                            arguments: user,
+                          ),
+                          leading: ClipOval(
+                            child: Image(
+                              image: NetworkImage(user.image),
+                              fit: BoxFit.cover,
+                              width: 50,
+                              height: 50,
+                            ),
+                          ),
+                          title: Text(user.name),
+                          subtitle: Text(user.email),
+                        );
+                      },
+                    ),
             ),
           ],
         ),
-        Positioned(
-          bottom: 30,
-          right: 30,
-          child: ClipOval(
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(AppRouter.addinfo);
-              },
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
-              child: const Icon(
-                Icons.add,
-                size: 30,
-              ),
-            ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.of(context).pushNamed(AppRouter.addinfo);
+          },
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+          child: const Icon(
+            Icons.add,
+            size: 30,
           ),
-        )
-      ]),
-    );
+        ));
   }
 
   Future<void> getData() async {
@@ -152,14 +142,23 @@ class _HomeScreensState extends State<HomeScreens> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
+            // TODO :
+            // NOTE : StateSetter dung de thay doi trang thai trong showModelButtomSheet voi stateful builder
             return Container(
-              height: 300,
+              height: MediaQuery.of(context).size.height * 0.3,
+              // TODO :
+              /// sua theo 2 cach :
+              /// 1/ sua theo kich thuoc man hinh
+              /// 1/ de mac dinh khong dung kich thuoc cua container
+              /// ==> dung column
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(width: 5, color: Colors.black),
               ),
               child: ListView(
                 children: [
+                  /// TODO : tao ra mot danh sach listtitle
+                  /// dung listview.builder
                   const ListTile(
                     title: Text('Please choose:'),
                   ),
