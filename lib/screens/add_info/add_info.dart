@@ -1,7 +1,7 @@
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
-import 'package:appdemo/screens/home/home_tabhome/widgets/check_img.dart';
+import 'package:appdemo/widgets/check_img.dart';
 import 'package:appdemo/services/api_service/home_sevice.dart';
 import 'package:appdemo/widgets/main_app_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -215,7 +215,8 @@ class _AddInfoState extends State<AddInfo> {
   }
 
   Future<void> _addUser() async {
-    // TODO:
+    // TODO: da xu ly
+    // neu khong can thiet phai dung den local thi khong can tao bien local
     ModelUser user = ModelUser(
       name: _nameController.text,
       email: _emailController.text,
@@ -226,7 +227,7 @@ class _AddInfoState extends State<AddInfo> {
     );
 
     try {
-      await HomeSevice().createData(user);
+      await HomeService().createData(user);
     } catch (e) {
       rethrow;
     }

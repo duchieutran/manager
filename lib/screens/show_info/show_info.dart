@@ -118,7 +118,7 @@ class ShowInfo extends StatelessWidget {
             CupertinoDialogAction(
               child: const Text("OK"),
               onPressed: () {
-                HomeSevice().deteleData(user.id);
+                HomeService().deteleData(user.id);
                 Navigator.of(context)
                     .pushNamed(AppRouter.home, arguments: true);
               },

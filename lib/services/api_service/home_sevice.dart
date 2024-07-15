@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/services/reponsitory/home_reponsitory.dart';
 
-class HomeSevice extends HomeReponsitory {
+class HomeService extends HomeReponsitory {
   @override
   Future<ModelUser> createData(ModelUser user) async {
     try {
@@ -41,7 +41,7 @@ class HomeSevice extends HomeReponsitory {
         throw Exception('Failed to delete user');
       }
     } catch (e) {
-      throw UnimplementedError();
+      rethrow;
     }
   }
 
@@ -91,7 +91,6 @@ class HomeSevice extends HomeReponsitory {
 
   @override
   Future<bool> updateData(String id, Map<String, dynamic> data) async {
-
     try {
       final response = await http.put(
           Uri.parse(
@@ -101,7 +100,6 @@ class HomeSevice extends HomeReponsitory {
           },
           body: jsonEncode(data));
       if (response.statusCode == 200) {
-        
         return true;
       } else {
         throw 'Fail !';

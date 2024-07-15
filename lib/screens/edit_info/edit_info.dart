@@ -1,7 +1,7 @@
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
-import 'package:appdemo/screens/home/home_tabhome/widgets/check_img.dart';
+import 'package:appdemo/widgets/check_img.dart';
 import 'package:appdemo/services/api_service/home_sevice.dart';
 import 'package:appdemo/widgets/main_app_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -41,7 +41,7 @@ class _EditInfoState extends State<EditInfo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MainAppBar(
-        title: "Edit Infomation",
+        title: "Edit Information",
         fontSize: 25,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
@@ -148,22 +148,20 @@ class _EditInfoState extends State<EditInfo> {
         emailController.text.isEmpty ||
         addressController.text.isEmpty ||
         imageController.text.isEmpty ||
-        ageController.text.runtimeType != int) {
-      if (mounted) {
-        _showDialog(
-            title: "Validation Error", content: "Please fill in all fields.");
-      }
+        ageController.text.isEmpty ||
+        int.tryParse(ageController.text) == null) {
+      _showDialog(title: "Notification", content: "Fields cannot be empty.");
     } else {
       if (!await CheckImg().loadImg(imageController.text)) {
         if (mounted) {
-          _showDialog(title: "Error", content: "Invalid image URL.");
+          _showDialog(title: "Error", content: "Invalid URL format.");
         }
       } else {
         await _updateData();
         if (mounted) {
           _showDialog(
               title: "Success",
-              content: "Add profile complete.",
+              content: "Information updated successfully.",
               action: () {
                 Navigator.of(context)
                     .pushNamed(AppRouter.home, arguments: false);
@@ -203,6 +201,6 @@ class _EditInfoState extends State<EditInfo> {
         address: addressController.text,
         email: emailController.text,
         image: imageController.text);
-    await HomeSevice().updateData(_userUpdate.id, _userUpdate.toJSON());
+    await HomeService().updateData(_userUpdate.id, _userUpdate.toJSON());
   }
 }

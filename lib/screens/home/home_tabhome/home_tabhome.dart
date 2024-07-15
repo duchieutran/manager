@@ -1,9 +1,12 @@
-import 'package:appdemo/services/api_service/home_sevice.dart';
-import 'package:appdemo/widgets/main_novalue.dart';
-import 'package:appdemo/widgets/main_progress.dart';
-import 'package:flutter/material.dart';
+import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
-import '../../../global/app_router.dart';
+import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
+import 'package:appdemo/services/api_service/home_sevice.dart';
+import 'package:appdemo/widgets/check_img.dart';
+import 'package:appdemo/widgets/main_progress.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class HomeScreens extends StatefulWidget {
   const HomeScreens({super.key, required this.isLoading});
@@ -16,85 +19,133 @@ class HomeScreens extends StatefulWidget {
 
 class _HomeScreensState extends State<HomeScreens> {
   List<ModelUser> filteredUsers = [];
-  late bool _isLoading;
   late TextEditingController _searchController;
+  late TextEditingController _nameController;
+  late TextEditingController _emailController;
+  late TextEditingController _addressController;
+  late TextEditingController _imageController;
+  late TextEditingController _ageController;
   String _key = 'id';
+  List<String> fillerTitle = ['ID', 'Name', 'Address', 'Age', 'Email'];
 
   @override
   void initState() {
-    _isLoading = widget.isLoading;
     _searchController = TextEditingController();
-    // didChangeDependencies();
+    _nameController = TextEditingController();
+    _emailController = TextEditingController();
+    _addressController = TextEditingController();
+    _imageController = TextEditingController();
+    _ageController = TextEditingController();
+
     getData();
     super.initState();
-  }
-
-  // TODO: da xu ly
-
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   if (_isLoading) {
-  //     getData();
-  //   }
-  // }
-
-  Future<void> _searchShowInfo(String value) async {
-    try {
-      final List<ModelUser> tmp = await HomeSevice().searchData(_key, value);
-      setState(() {
-        filteredUsers = tmp;
-      });
-    } catch (e) {
-      setState(() {
-        filteredUsers = [];
-      });
-    }
   }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _nameController.dispose();
+    _emailController.dispose();
+    _addressController.dispose();
+    _imageController.dispose();
+    _ageController.dispose();
     super.dispose();
+  }
+
+  Future<void> _searchShowInfo(String value) async {
+    try {
+      final List<ModelUser> tmp = await HomeService().searchData(_key, value);
+      if (mounted) {
+        setState(() {
+          filteredUsers = tmp;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          filteredUsers = [];
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: TextField(
-                controller: _searchController,
-                decoration: InputDecoration(
-                  hintText: 'Search...',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.filter_list),
-                    onPressed: () {
-                      _showFilterDialog(context);
-                    },
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Search...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.filter_list),
+                  onPressed: () {
+                    _showFilterDialog(context);
+                  },
                 ),
-                onChanged: (value) {
-                  _searchShowInfo(value);
-                },
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(25),
+                ),
               ),
+              onChanged: (value) {
+                _searchShowInfo(value);
+              },
             ),
-            Expanded(
-              // TODO: // da tim hieu
-              // flex: 9, // nhieu hon 2 phan tu thi dung flex
-              child: filteredUsers.isEmpty
-                  ? const MainProgress()
-                  : ListView.builder(
-                      itemCount: filteredUsers.length,
-                      itemBuilder: (context, index) {
-                        final user = filteredUsers[index];
-                        return ListTile(
+          ),
+          Expanded(
+            child: filteredUsers.isEmpty
+                ? const MainProgress()
+                : ListView.builder(
+                    itemCount: filteredUsers.length,
+                    itemBuilder: (context, index) {
+                      final user = filteredUsers[index];
+                      return Slidable(
+                        startActionPane: ActionPane(
+                          motion: const ScrollMotion(),
+                          children: [
+                            SlidableAction(
+                              flex: 1,
+                              onPressed: (context) {
+                                Navigator.of(context).pushNamed(
+                                    AppRouter.showinfo,
+                                    arguments: user);
+                              },
+                              backgroundColor: Colors.blue,
+                              foregroundColor: Colors.white,
+                              icon: Icons.info,
+                              label: 'Info',
+                            )
+                          ],
+                        ),
+                        endActionPane: ActionPane(
+                          motion: const DrawerMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) {
+                                _showEditDialog(context, user);
+                              },
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              icon: Icons.edit,
+                              label: 'Modify',
+                            ),
+                            SlidableAction(
+                              onPressed: (context) {
+                                _showCancelDialog(
+                                    context: context, userID: user.id);
+                              },
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete,
+                              label: 'Delete',
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
                           onTap: () => Navigator.of(context).pushNamed(
                             AppRouter.showinfo,
                             arguments: user,
@@ -109,123 +160,237 @@ class _HomeScreensState extends State<HomeScreens> {
                           ),
                           title: Text(user.name),
                           subtitle: Text(user.email),
-                        );
-                      },
-                    ),
-            ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).pushNamed(AppRouter.addinfo);
-          },
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          child: const Icon(
-            Icons.add,
-            size: 30,
+                        ),
+                      );
+                    },
+                  ),
           ),
-        ));
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).pushNamed(AppRouter.addinfo);
+        },
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+        child: const Icon(
+          Icons.add,
+          size: 30,
+        ),
+      ),
+    );
   }
 
   Future<void> getData() async {
-    final List<ModelUser> tmp = await HomeSevice().getData();
-    setState(() {
-      filteredUsers = tmp;
-      _isLoading = false;
-    });
+    final List<ModelUser> tmp = await HomeService().getData();
+    if (mounted) {
+      setState(() {
+        filteredUsers = tmp;
+      });
+    }
   }
 
   void _showFilterDialog(BuildContext context) {
-    showModalBottomSheet(
+    showDialog(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
-            // TODO :
-            // NOTE : StateSetter dung de thay doi trang thai trong showModelButtomSheet voi stateful builder
             return Container(
               height: MediaQuery.of(context).size.height * 0.3,
-              // TODO :
-              /// sua theo 2 cach :
-              /// 1/ sua theo kich thuoc man hinh
-              /// 1/ de mac dinh khong dung kich thuoc cua container
-              /// ==> dung column
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(width: 5, color: Colors.black),
               ),
-              child: ListView(
-                children: [
-                  /// TODO : tao ra mot danh sach listtitle
-                  /// dung listview.builder
-                  const ListTile(
-                    title: Text('Please choose:'),
-                  ),
-                  RadioListTile<String>(
-                    value: 'id',
-                    title: const Text('ID'),
+              child: ListView.builder(
+                itemCount: fillerTitle.length,
+                itemBuilder: (context, index) {
+                  final title = fillerTitle[index];
+
+                  return RadioListTile(
+                    value: title.toLowerCase(),
+                    title: Text(title),
                     groupValue: _key,
                     onChanged: (value) {
-                      setModalState(() {
+                      setState(() {
                         _key = value!;
                       });
                       _searchShowInfo(_searchController.text);
                       Navigator.pop(context);
                     },
-                  ),
-                  RadioListTile<String>(
-                    value: 'name',
-                    title: const Text('Name'),
-                    groupValue: _key,
-                    onChanged: (value) {
-                      setModalState(() {
-                        _key = value!;
-                      });
-                      _searchShowInfo(_searchController.text);
-                      Navigator.pop(context);
-                    },
-                  ),
-                  RadioListTile<String>(
-                    value: 'address',
-                    title: const Text('Address'),
-                    groupValue: _key,
-                    onChanged: (value) {
-                      setModalState(() {
-                        _key = value!;
-                      });
-                      _searchShowInfo(_searchController.text);
-                      Navigator.pop(context);
-                    },
-                  ),
-                  RadioListTile<String>(
-                    value: 'age',
-                    title: const Text('Age'),
-                    groupValue: _key,
-                    onChanged: (value) {
-                      setModalState(() {
-                        _key = value!;
-                      });
-                      _searchShowInfo(_searchController.text);
-                      Navigator.pop(context);
-                    },
-                  ),
-                  RadioListTile<String>(
-                    value: 'email',
-                    title: const Text('Email'),
-                    groupValue: _key,
-                    onChanged: (value) {
-                      setModalState(() {
-                        _key = value!;
-                      });
-                      _searchShowInfo(_searchController.text);
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
+                  );
+                },
               ),
             );
           },
+        );
+      },
+    );
+  }
+
+  void _showEditDialog(BuildContext context, ModelUser user) {
+    _nameController.text = user.name;
+    _ageController.text = user.age.toString();
+    _addressController.text = user.address;
+    _emailController.text = user.email;
+    _imageController.text = user.image;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return SingleChildScrollView(
+          child: AlertDialog(
+            title: const Text('Edit profile'),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  EditTextfield(
+                    controller: _nameController,
+                    title: 'Name',
+                    hintText: 'Type your name',
+                    icon: const Icon(Icons.person),
+                    textInputType: TextInputType.name,
+                  ),
+                  EditTextfield(
+                    controller: _ageController,
+                    title: 'Age',
+                    hintText: 'Type your age',
+                    icon: const Icon(Icons.cake),
+                    textInputType: TextInputType.number,
+                  ),
+                  EditTextfield(
+                    controller: _addressController,
+                    title: 'Address',
+                    hintText: 'Type your address',
+                    icon: const Icon(Icons.location_city),
+                    textInputType: TextInputType.name,
+                  ),
+                  EditTextfield(
+                    controller: _emailController,
+                    title: 'Email',
+                    hintText: 'Type your email',
+                    icon: const Icon(Icons.email),
+                    textInputType: TextInputType.emailAddress,
+                  ),
+                  EditTextfield(
+                    controller: _imageController,
+                    title: 'Image',
+                    hintText: 'Type your image',
+                    icon: const Icon(Icons.image),
+                    textInputType: TextInputType.url,
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 101, 179, 243),
+                    ),
+                    onPressed: () {
+                      _checkValidate(user.id);
+                    },
+                    child: const Text(
+                      'Submit',
+                      style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _updateData(String id) async {
+    ModelUser userUpdate = ModelUser(
+        id: id,
+        name: _nameController.text,
+        age: int.tryParse(_ageController.text) ?? 0,
+        address: _addressController.text,
+        email: _emailController.text,
+        image: _imageController.text);
+    await HomeService().updateData(userUpdate.id, userUpdate.toJSON());
+  }
+
+  Future<void> _checkValidate(String id) async {
+    if (_nameController.text.isEmpty ||
+        _emailController.text.isEmpty ||
+        _addressController.text.isEmpty ||
+        _imageController.text.isEmpty ||
+        _ageController.text.isEmpty ||
+        int.tryParse(_ageController.text) == null) {
+      _showDialog(title: "Notification", content: "Fields cannot be empty.");
+    } else {
+      if (!await CheckImg().loadImg(_imageController.text)) {
+        if (mounted) {
+          _showDialog(title: "Error", content: "Invalid URL format.");
+        }
+      } else {
+        await _updateData(id);
+        if (mounted) {
+          _showDialog(
+              title: "Success",
+              content: "Information updated successfully.",
+              action: () {
+                Navigator.of(context)
+                    .pushNamed(AppRouter.home, arguments: false);
+              });
+        }
+      }
+    }
+  }
+
+  void _showDialog(
+      {required String title, required String content, VoidCallback? action}) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CupertinoAlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            CupertinoDialogAction(
+              child: const Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (action != null) action();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showCancelDialog(
+      {required BuildContext context, required String userID}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: const Text("Notification"),
+          content: const Text("Are you sure you want delete =))) ??? "),
+          actions: [
+            CupertinoDialogAction(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            CupertinoDialogAction(
+              onPressed: () {
+                Navigator.of(context).pop();
+                HomeService().deteleData(userID);
+                _searchShowInfo(_searchController.text);
+              },
+              child: Text("Okee"),
+            ),
+          ],
         );
       },
     );

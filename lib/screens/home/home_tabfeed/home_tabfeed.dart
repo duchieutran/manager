@@ -16,7 +16,7 @@ class _FeedSreenState extends State<FeedSreen> {
   bool _isLoading = true;
 
   getData() async {
-    final List<ModelUser> tmp = await HomeSevice().getData();
+    final List<ModelUser> tmp = await HomeService().getData();
     setState(() {
       users = tmp;
       _isLoading = false;
