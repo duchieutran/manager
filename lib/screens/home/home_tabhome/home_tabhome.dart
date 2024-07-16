@@ -9,9 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 class HomeScreens extends StatefulWidget {
-  const HomeScreens({super.key, required this.isLoading});
-
-  final bool isLoading;
+  const HomeScreens({super.key});
 
   @override
   State<HomeScreens> createState() => _HomeScreensState();
@@ -50,23 +48,6 @@ class _HomeScreensState extends State<HomeScreens> {
     _imageController.dispose();
     _ageController.dispose();
     super.dispose();
-  }
-
-  Future<void> _searchShowInfo(String value) async {
-    try {
-      final List<ModelUser> tmp = await HomeService().searchData(_key, value);
-      if (mounted) {
-        setState(() {
-          filteredUsers = tmp;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          filteredUsers = [];
-        });
-      }
-    }
   }
 
   @override
@@ -126,7 +107,9 @@ class _HomeScreensState extends State<HomeScreens> {
                           children: [
                             SlidableAction(
                               onPressed: (context) {
-                                _showEditDialog(context, user);
+                                setState(() {
+                                  _showEditDialog(context, user);
+                                });
                               },
                               backgroundColor: Colors.green,
                               foregroundColor: Colors.white,
@@ -135,8 +118,10 @@ class _HomeScreensState extends State<HomeScreens> {
                             ),
                             SlidableAction(
                               onPressed: (context) {
-                                _showCancelDialog(
-                                    context: context, userID: user.id);
+                                setState(() {
+                                  _showCancelDialog(
+                                      context: context, userRemote: user);
+                                });
                               },
                               backgroundColor: Colors.red,
                               foregroundColor: Colors.white,
@@ -228,13 +213,29 @@ class _HomeScreensState extends State<HomeScreens> {
     );
   }
 
+  Future<void> _searchShowInfo(String value) async {
+    try {
+      final List<ModelUser> tmp = await HomeService().searchData(_key, value);
+      if (mounted) {
+        setState(() {
+          filteredUsers = tmp;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          filteredUsers = [];
+        });
+      }
+    }
+  }
+
   void _showEditDialog(BuildContext context, ModelUser user) {
     _nameController.text = user.name;
     _ageController.text = user.age.toString();
     _addressController.text = user.address;
     _emailController.text = user.email;
     _imageController.text = user.image;
-
     showDialog(
       context: context,
       builder: (context) {
@@ -308,17 +309,6 @@ class _HomeScreensState extends State<HomeScreens> {
     );
   }
 
-  Future<void> _updateData(String id) async {
-    ModelUser userUpdate = ModelUser(
-        id: id,
-        name: _nameController.text,
-        age: int.tryParse(_ageController.text) ?? 0,
-        address: _addressController.text,
-        email: _emailController.text,
-        image: _imageController.text);
-    await HomeService().updateData(userUpdate.id, userUpdate.toJSON());
-  }
-
   Future<void> _checkValidate(String id) async {
     if (_nameController.text.isEmpty ||
         _emailController.text.isEmpty ||
@@ -339,11 +329,77 @@ class _HomeScreensState extends State<HomeScreens> {
               title: "Success",
               content: "Information updated successfully.",
               action: () {
-                Navigator.of(context)
-                    .pushNamed(AppRouter.home, arguments: false);
+                Navigator.of(context).pop();
               });
         }
       }
+    }
+  }
+
+  Future<void> _updateData(String id) async {
+    ModelUser userUpdate = ModelUser(
+        id: id,
+        name: _nameController.text,
+        age: int.tryParse(_ageController.text) ?? 0,
+        address: _addressController.text,
+        email: _emailController.text,
+        image: _imageController.text);
+    await HomeService().updateData(userUpdate.id, userUpdate.toJSON());
+
+    setState(() {
+      final index = filteredUsers.indexWhere((value) => value.id == id);
+      filteredUsers[index] = userUpdate;
+    });
+  }
+
+  void _showCancelDialog(
+      {required BuildContext context, required ModelUser userRemote}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: const Text("Notification"),
+          content: const Text("Are you sure you want delete =))) ??? "),
+          actions: [
+            CupertinoDialogAction(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            CupertinoDialogAction(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                setState(() {
+                  filteredUsers.remove(userRemote);
+                });
+                bool deleteSuccess = await _deletaData(id: userRemote.id);
+
+                if (deleteSuccess) {
+                  _showDialog(
+                      title: 'Success', content: 'User deleted successfully.');
+                } else {
+                  setState(() {
+                    filteredUsers.add(userRemote);
+                  });
+                  _showDialog(
+                      title: 'Error',
+                      content: 'Failed to delete the user from the server.');
+                }
+                _searchShowInfo(_searchController.text);
+              },
+              child: const Text("Okee"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<bool> _deletaData({required String id}) async {
+    try {
+      await HomeService().deteleData(id);
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 
@@ -362,33 +418,6 @@ class _HomeScreensState extends State<HomeScreens> {
                 Navigator.of(context).pop();
                 if (action != null) action();
               },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showCancelDialog(
-      {required BuildContext context, required String userID}) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return CupertinoAlertDialog(
-          title: const Text("Notification"),
-          content: const Text("Are you sure you want delete =))) ??? "),
-          actions: [
-            CupertinoDialogAction(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            CupertinoDialogAction(
-              onPressed: () {
-                Navigator.of(context).pop();
-                HomeService().deteleData(userID);
-                _searchShowInfo(_searchController.text);
-              },
-              child: Text("Okee"),
             ),
           ],
         );

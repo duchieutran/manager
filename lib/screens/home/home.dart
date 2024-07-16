@@ -7,9 +7,7 @@ import '../../widgets/main_app_bar.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatelessWidget {
-  const Home({super.key, this.isLoading = true});
-  final bool isLoading;
-  
+  const Home({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,14 +37,12 @@ class Home extends StatelessWidget {
                 HomeTabbar(text: 'Settings', icon: Icons.settings),
               ]),
             ),
-            body: TabBarView(
+            body: const TabBarView(
               children: [
-                HomeScreens(
-                  isLoading: isLoading,
-                ),
-                const FeedSreen(),
-                const ProfileScreen(),
-                const SettingScreen(),
+                HomeScreens(),
+                FeedSreen(),
+                ProfileScreen(),
+                SettingScreen(),
               ],
             ),
           )),

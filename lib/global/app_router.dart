@@ -23,9 +23,7 @@ class AppRouter {
       case login:
         return LoginScreen();
       case home:
-        return Home(
-          isLoading: agruments as bool,
-        );
+        return const Home();
       case editinfo:
         return EditInfo(
           user: agruments as ModelUser,
