@@ -1,7 +1,7 @@
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
-import 'package:appdemo/services/api_service/home_sevice.dart';
+import 'package:appdemo/services/api_service/home_service.dart';
 import 'package:appdemo/widgets/check_img.dart';
 import 'package:appdemo/widgets/main_progress.dart';
 import 'package:flutter/cupertino.dart';
@@ -372,7 +372,6 @@ class _HomeScreensState extends State<HomeScreens> {
                   filteredUsers.remove(userRemote);
                 });
                 bool deleteSuccess = await _deletaData(id: userRemote.id);
-
                 if (deleteSuccess) {
                   _showDialog(
                       title: 'Success', content: 'User deleted successfully.');

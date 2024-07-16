@@ -1,5 +1,5 @@
 import 'package:appdemo/global/app_router.dart';
-import 'package:appdemo/services/api_service/home_sevice.dart';
+import 'package:appdemo/services/api_service/home_service.dart';
 import 'package:flutter/cupertino.dart';
 import '../../models/model_user.dart';
 import 'widgets/show_info_avatar.dart';

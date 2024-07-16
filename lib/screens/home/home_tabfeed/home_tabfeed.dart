@@ -1,5 +1,5 @@
 import 'package:appdemo/screens/home/home_tabfeed/widgets/feed_textlogo.dart';
-import 'package:appdemo/services/api_service/home_sevice.dart';
+import 'package:appdemo/services/api_service/home_service.dart';
 import '../../../models/model_user.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
