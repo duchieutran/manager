@@ -191,7 +191,6 @@ class _HomeScreensState extends State<HomeScreens> {
                 itemCount: fillerTitle.length,
                 itemBuilder: (context, index) {
                   final title = fillerTitle[index];
-
                   return RadioListTile(
                     value: title.toLowerCase(),
                     title: Text(title),
