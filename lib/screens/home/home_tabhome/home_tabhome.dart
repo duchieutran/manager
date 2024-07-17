@@ -370,8 +370,8 @@ class _HomeScreensState extends State<HomeScreens> {
                 setState(() {
                   filteredUsers.remove(userRemote);
                 });
-                bool deleteSuccess = await _deletaData(id: userRemote.id);
-                if (deleteSuccess) {
+                bool _deleteSuccess = await _deletaData(id: userRemote.id);
+                if (_deleteSuccess) {
                   _showDialog(
                       title: 'Success', content: 'User deleted successfully.');
                 } else {
