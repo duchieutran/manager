@@ -14,5 +14,5 @@ abstract class HomeReponsitory {
   Future<bool> updateData(String id, Map<String, dynamic> data);
 
   //tao moi gia tri
-  Future<ModelUser> createData(ModelUser user);
+  Future<bool> createData(ModelUser user);
 }

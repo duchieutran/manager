@@ -1,3 +1,4 @@
+import 'package:appdemo/global/api/api_error.dart';
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
@@ -167,11 +168,14 @@ class _HomeScreensState extends State<HomeScreens> {
   }
 
   Future<void> getData() async {
-    final List<ModelUser> tmp = await HomeService().getData();
-    if (mounted) {
+    try {
+      final List<ModelUser> tmp = await HomeService().getData();
       setState(() {
         filteredUsers = tmp;
       });
+    } catch (e) {
+      ApiError error = e as ApiError;
+      _showDialog(title: 'Message', content: error.errorMessege.toString());
     }
   }
 
