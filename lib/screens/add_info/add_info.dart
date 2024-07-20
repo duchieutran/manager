@@ -1,3 +1,4 @@
+import 'package:appdemo/global/api/api_error.dart';
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
@@ -158,7 +159,6 @@ class _AddInfoState extends State<AddInfo> {
         _emailController.text.isEmpty ||
         _addressController.text.isEmpty ||
         _imageController.text.isEmpty) {
-      // TODO: check mounted
       if (mounted) {
         _showDialog(
             title: "Validation Error", content: "Please fill in all fields.");
@@ -169,26 +169,31 @@ class _AddInfoState extends State<AddInfo> {
           _showDialog(title: "Error", content: "Invalid image URL.");
         }
       } else {
-        await _addUser();
-        if (mounted) {
-          _showDialog(
-              title: "Success",
-              content: "Add profile complete.",
-              actions: [
-                CupertinoDialogAction(
-                  child: const Text("OK"),
-                  onPressed: () {
-                    Navigator.of(context)
-                        .pushNamed(AppRouter.home, arguments: false);
-                  },
-                ),
-                CupertinoDialogAction(
-                  child: const Text("Stay here"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ]);
+        try {
+          await _addUser();
+          if (mounted) {
+            _showDialog(
+                title: "Success",
+                content: "Add profile complete.",
+                actions: [
+                  CupertinoDialogAction(
+                    child: const Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context)
+                          .pushNamed(AppRouter.home, arguments: false);
+                    },
+                  ),
+                  CupertinoDialogAction(
+                    child: const Text("Stay here"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ]);
+          }
+        } catch (e) {
+          ApiError error = e as ApiError;
+          _showDialog(title: "Message", content: error.errorMessage.toString());
         }
       }
     }

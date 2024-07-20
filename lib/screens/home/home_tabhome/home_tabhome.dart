@@ -175,7 +175,7 @@ class _HomeScreensState extends State<HomeScreens> {
       });
     } catch (e) {
       ApiError error = e as ApiError;
-      _showDialog(title: 'Message', content: error.errorMessege.toString());
+      _showDialog(title: 'Message', content: error.errorMessage.toString());
     }
   }
 
@@ -228,6 +228,12 @@ class _HomeScreensState extends State<HomeScreens> {
       if (mounted) {
         setState(() {
           filteredUsers = [];
+          ApiError error = e as ApiError;
+          _showDialog(
+            title: "Message",
+            content: error.errorMessage.toString(),
+            action: () {},
+          );
         });
       }
     }

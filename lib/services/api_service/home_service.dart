@@ -6,7 +6,7 @@ import 'package:appdemo/services/reponsitory/home_reponsitory.dart';
 
 class HomeService extends HomeReponsitory {
   final RestClient _restClient = RestClient(
-      baseURL: "https://66879a5f0bc7155dc0184943.mockapi.io/api/v1/users1");
+      baseURL: "https://66879a5f0bc7155dc0184943.mockapi.io/api/v1/users");
   final dio = Dio();
 
   @override

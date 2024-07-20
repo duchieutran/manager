@@ -1,3 +1,4 @@
+import 'package:appdemo/global/api/api_error.dart';
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
@@ -157,14 +158,19 @@ class _EditInfoState extends State<EditInfo> {
           _showDialog(title: "Error", content: "Invalid URL format.");
         }
       } else {
-        await _updateData();
-        if (mounted) {
-          _showDialog(
-              title: "Success",
-              content: "Information updated successfully.",
-              action: () {
-                Navigator.of(context).pushNamed(AppRouter.home);
-              });
+        try {
+          await _updateData();
+          if (mounted) {
+            _showDialog(
+                title: "Success",
+                content: "Information updated successfully.",
+                action: () {
+                  Navigator.of(context).pushNamed(AppRouter.home);
+                });
+          }
+        } catch (e) {
+          ApiError error = e as ApiError;
+          _showDialog(title: 'Message', content: error.errorMessage.toString());
         }
       }
     }

@@ -141,14 +141,14 @@ class RestClient {
         case DioExceptionType.connectionTimeout:
           return ApiError(
               errorCode: "CONNECT_TIMEOUT",
-              errorMessege: "Co loi ket noi den sever");
+              errorMessage: "Co loi ket noi den sever");
         case DioExceptionType.sendTimeout:
           return ApiError(
               errorCode: "SEND_TIMEOUT",
-              errorMessege: "Co loi khi gui den sever");
+              errorMessage: "Co loi khi gui den sever");
         case DioExceptionType.receiveTimeout:
           return ApiError(
-              errorCode: "RECEIVE_TIMEOUT", errorMessege: "Co loi receive");
+              errorCode: "RECEIVE_TIMEOUT", errorMessage: "Co loi receive");
         case DioExceptionType.badResponse:
           if (e.response?.data != null && e.response is Map) {
             String code = '';
@@ -158,23 +158,23 @@ class RestClient {
               if (code == '404') {
                 return ApiError(
                     errorCode: code,
-                    errorMessege: 'Co loi 404 ket noi den sever',
+                    errorMessage: 'Co loi 404 ket noi den sever',
                     extraData: e.response?.data);
               }
             } catch (error) {
               return ApiError(
-                  errorMessege: "Co loi da xay ra",
+                  errorMessage: "Co loi da xay ra",
                   extraData: e.response?.data,
                   errorCode: code);
             }
           } else {
             return ApiError(
-                errorMessege: "Co loi da xay ra",
+                errorMessage: "An error has occurred.",
                 extraData: e.response?.data,
-                errorCode: '40444444');
+                errorCode: '4000');
           }
           return ApiError(
-              errorCode: "RECEIVE_TIMEOUT", errorMessege: "Co loi receive");
+              errorCode: "RECEIVE_TIMEOUT", errorMessage: "Co loi receive");
 
         default:
       }
