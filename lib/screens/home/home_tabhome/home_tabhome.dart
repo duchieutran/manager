@@ -1,13 +1,15 @@
-import 'package:appdemo/global/api/api_error.dart';
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
+import 'package:appdemo/screens/home/home_tabhome/widgets/home_tabhome_dialog.dart';
+import 'package:appdemo/screens/home/home_tabhome/widgets/home_tabhome_provider.dart';
 import 'package:appdemo/services/api_service/home_service.dart';
 import 'package:appdemo/widgets/check_img.dart';
 import 'package:appdemo/widgets/main_progress.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreens extends StatefulWidget {
   const HomeScreens({super.key});
@@ -17,7 +19,7 @@ class HomeScreens extends StatefulWidget {
 }
 
 class _HomeScreensState extends State<HomeScreens> {
-  List<ModelUser> filteredUsers = [];
+  late List<ModelUser> filteredUsers;
   late TextEditingController _searchController;
   late TextEditingController _nameController;
   late TextEditingController _emailController;
@@ -35,10 +37,16 @@ class _HomeScreensState extends State<HomeScreens> {
     _addressController = TextEditingController();
     _imageController = TextEditingController();
     _ageController = TextEditingController();
-
-    getData();
+    Provider.of<HomeTabhomeProvider>(context, listen: false)
+        .getData(context: context);
     super.initState();
   }
+
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+
+  // }
 
   @override
   void dispose() {
@@ -78,79 +86,82 @@ class _HomeScreensState extends State<HomeScreens> {
               },
             ),
           ),
-          Expanded(
-            child: filteredUsers.isEmpty
-                ? const MainProgress()
-                : ListView.builder(
-                    itemCount: filteredUsers.length,
-                    itemBuilder: (context, index) {
-                      final user = filteredUsers[index];
-                      return Slidable(
-                        startActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          children: [
-                            SlidableAction(
-                              flex: 1,
-                              onPressed: (context) {
-                                Navigator.of(context).pushNamed(
-                                    AppRouter.showinfo,
-                                    arguments: user);
-                              },
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                              icon: Icons.info,
-                              label: 'Info',
-                            )
-                          ],
-                        ),
-                        endActionPane: ActionPane(
-                          motion: const DrawerMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (context) {
-                                setState(() {
-                                  _showEditDialog(context, user);
-                                });
-                              },
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.white,
-                              icon: Icons.edit,
-                              label: 'Modify',
-                            ),
-                            SlidableAction(
-                              onPressed: (context) {
-                                setState(() {
-                                  _showCancelDialog(
-                                      context: context, userRemote: user);
-                                });
-                              },
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              icon: Icons.delete,
-                              label: 'Delete',
-                            ),
-                          ],
-                        ),
-                        child: ListTile(
-                          onTap: () => Navigator.of(context).pushNamed(
-                            AppRouter.showinfo,
-                            arguments: user,
+          Expanded(child: Consumer<HomeTabhomeProvider>(
+            builder: (context, value, child) {
+              filteredUsers = value.filteredUsers;
+              return filteredUsers.isEmpty
+                  ? const MainProgress()
+                  : ListView.builder(
+                      itemCount: value.filteredUsers.length,
+                      itemBuilder: (context, index) {
+                        final user = value.filteredUsers[index];
+                        return Slidable(
+                          startActionPane: ActionPane(
+                            motion: const ScrollMotion(),
+                            children: [
+                              SlidableAction(
+                                flex: 1,
+                                onPressed: (context) {
+                                  Navigator.of(context).pushNamed(
+                                      AppRouter.showinfo,
+                                      arguments: user);
+                                },
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                icon: Icons.info,
+                                label: 'Info',
+                              )
+                            ],
                           ),
-                          leading: ClipOval(
-                            child: Image(
-                              image: NetworkImage(user.image),
-                              fit: BoxFit.cover,
-                              width: 50,
-                              height: 50,
-                            ),
+                          endActionPane: ActionPane(
+                            motion: const DrawerMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (context) {
+                                  setState(() {
+                                    _showEditDialog(context, user);
+                                  });
+                                },
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                                icon: Icons.edit,
+                                label: 'Modify',
+                              ),
+                              SlidableAction(
+                                onPressed: (context) {
+                                  setState(() {
+                                    _showCancelDialog(
+                                        context: context, userRemote: user);
+                                  });
+                                },
+                                backgroundColor: Colors.red,
+                                foregroundColor: Colors.white,
+                                icon: Icons.delete,
+                                label: 'Delete',
+                              ),
+                            ],
                           ),
-                          title: Text(user.name),
-                          subtitle: Text(user.email),
-                        ),
-                      );
-                    },
-                  ),
-          ),
+                          child: ListTile(
+                            onTap: () => Navigator.of(context).pushNamed(
+                              AppRouter.showinfo,
+                              arguments: user,
+                            ),
+                            leading: ClipOval(
+                              child: Image(
+                                image: NetworkImage(user.image),
+                                fit: BoxFit.cover,
+                                width: 50,
+                                height: 50,
+                              ),
+                            ),
+                            title: Text(user.name),
+                            subtitle: Text(user.email),
+                          ),
+                        );
+                      },
+                    );
+            },
+          )),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -165,18 +176,6 @@ class _HomeScreensState extends State<HomeScreens> {
         ),
       ),
     );
-  }
-
-  Future<void> getData() async {
-    try {
-      final List<ModelUser> tmp = await HomeService().getData();
-      setState(() {
-        filteredUsers = tmp;
-      });
-    } catch (e) {
-      ApiError error = e as ApiError;
-      _showDialog(title: 'Message', content: error.errorMessage.toString());
-    }
   }
 
   void _showFilterDialog(BuildContext context) {
@@ -217,26 +216,27 @@ class _HomeScreensState extends State<HomeScreens> {
   }
 
   Future<void> _searchShowInfo(String value) async {
-    try {
-      final List<ModelUser> tmp = await HomeService().searchData(_key, value);
-      if (mounted) {
-        setState(() {
-          filteredUsers = tmp;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          filteredUsers = [];
-          ApiError error = e as ApiError;
-          _showDialog(
-            title: "Message",
-            content: error.errorMessage.toString(),
-            action: () {},
-          );
-        });
-      }
-    }
+    // try {
+    //   final List<ModelUser> tmp = await HomeService().searchData(_key, value);
+    //   if (mounted) {
+    //     setState(() {
+    //       filteredUsers = tmp;
+    //     });
+    //   }
+    // } catch (e) {
+    //   if (mounted) {
+    //     setState(() {
+    //       filteredUsers = [];
+    //       ApiError error = e as ApiError;
+    //       HomeTabhomeDialog.showCustomDialog(
+    //         context: context,
+    //         title: "Message",
+    //         content: error.errorMessage.toString(),
+    //         action: () {},
+    //       );
+    //     });
+    //   }
+    // }
   }
 
   void _showEditDialog(BuildContext context, ModelUser user) {
@@ -325,16 +325,18 @@ class _HomeScreensState extends State<HomeScreens> {
         _imageController.text.isEmpty ||
         _ageController.text.isEmpty ||
         int.tryParse(_ageController.text) == null) {
-      _showDialog(title: "Notification", content: "Fields cannot be empty.");
+      showCustomDialog(
+          title: "Notification", content: "Fields cannot be empty.");
     } else {
       if (!await CheckImg().loadImg(_imageController.text)) {
         if (mounted) {
-          _showDialog(title: "Error", content: "Invalid URL format.");
+          showCustomDialog(title: 'Error', content: 'Invalid URL format');
         }
       } else {
         await _updateData(id);
         if (mounted) {
-          _showDialog(
+          HomeTabhomeDialog.showCustomDialog(
+              context: context,
               title: "Success",
               content: "Information updated successfully.",
               action: () {
@@ -355,10 +357,10 @@ class _HomeScreensState extends State<HomeScreens> {
         image: _imageController.text);
     await HomeService().updateData(userUpdate.id, userUpdate.toJSON());
 
-    setState(() {
-      final index = filteredUsers.indexWhere((value) => value.id == id);
-      filteredUsers[index] = userUpdate;
-    });
+    // setState(() {
+    //   final index = filteredUsers.indexWhere((value) => value.id == id);
+    //   filteredUsers[index] = userUpdate;
+    // });
   }
 
   void _showCancelDialog(
@@ -377,18 +379,19 @@ class _HomeScreensState extends State<HomeScreens> {
             CupertinoDialogAction(
               onPressed: () async {
                 Navigator.of(context).pop();
-                setState(() {
-                  filteredUsers.remove(userRemote);
-                });
+                // setState(() {
+                //   filteredUsers.remove(userRemote);
+                // });
                 bool _deleteSuccess = await _deletaData(id: userRemote.id);
                 if (_deleteSuccess) {
-                  _showDialog(
+                  showCustomDialog(
                       title: 'Success', content: 'User deleted successfully.');
                 } else {
-                  setState(() {
-                    filteredUsers.add(userRemote);
-                  });
-                  _showDialog(
+                  // setState(() {
+                  //   filteredUsers.add(userRemote);
+                  // });
+
+                  showCustomDialog(
                       title: 'Error',
                       content: 'Failed to delete the user from the server.');
                 }
@@ -411,25 +414,8 @@ class _HomeScreensState extends State<HomeScreens> {
     }
   }
 
-  void _showDialog(
-      {required String title, required String content, VoidCallback? action}) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: Text(title),
-          content: Text(content),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (action != null) action();
-              },
-            ),
-          ],
-        );
-      },
-    );
+  showCustomDialog({required String title, required String content}) {
+    HomeTabhomeDialog.showCustomDialog(
+        context: context, title: title, content: content);
   }
 }
