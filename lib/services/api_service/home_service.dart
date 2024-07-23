@@ -27,7 +27,7 @@ class HomeService extends HomeReponsitory {
   @override
   Future<bool> deteleData(String id) async {
     try {
-      await _restClient.delete('/user/$id');
+      await _restClient.delete('/user1/$id');
       return true;
     } catch (e) {
       rethrow;

@@ -5,7 +5,6 @@ import 'package:appdemo/screens/home/home_tabhome/widgets/home_tabhome_dialog.da
 import 'package:appdemo/screens/home/home_tabhome/widgets/home_tabhome_provider.dart';
 import 'package:appdemo/services/api_service/home_service.dart';
 import 'package:appdemo/widgets/check_img.dart';
-import 'package:appdemo/widgets/main_progress.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -19,7 +18,6 @@ class HomeScreens extends StatefulWidget {
 }
 
 class _HomeScreensState extends State<HomeScreens> {
-  late List<ModelUser> filteredUsers;
   late TextEditingController _searchController;
   late TextEditingController _nameController;
   late TextEditingController _emailController;
@@ -39,14 +37,9 @@ class _HomeScreensState extends State<HomeScreens> {
     _ageController = TextEditingController();
     Provider.of<HomeTabhomeProvider>(context, listen: false)
         .getData(context: context);
+
     super.initState();
   }
-
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-
-  // }
 
   @override
   void dispose() {
@@ -88,9 +81,8 @@ class _HomeScreensState extends State<HomeScreens> {
           ),
           Expanded(child: Consumer<HomeTabhomeProvider>(
             builder: (context, value, child) {
-              filteredUsers = value.filteredUsers;
-              return filteredUsers.isEmpty
-                  ? const MainProgress()
+              return value.filteredUsers.isEmpty
+                  ? const Text('No value !')
                   : ListView.builder(
                       itemCount: value.filteredUsers.length,
                       itemBuilder: (context, index) {
@@ -129,10 +121,8 @@ class _HomeScreensState extends State<HomeScreens> {
                               ),
                               SlidableAction(
                                 onPressed: (context) {
-                                  setState(() {
-                                    _showCancelDialog(
-                                        context: context, userRemote: user);
-                                  });
+                                  _showCancelDialog(
+                                      context: context, userRemove: user);
                                 },
                                 backgroundColor: Colors.red,
                                 foregroundColor: Colors.white,
@@ -325,23 +315,22 @@ class _HomeScreensState extends State<HomeScreens> {
         _imageController.text.isEmpty ||
         _ageController.text.isEmpty ||
         int.tryParse(_ageController.text) == null) {
-      showCustomDialog(
-          title: "Notification", content: "Fields cannot be empty.");
+      _showDialog(title: "Notification", content: "Fields cannot be empty.");
     } else {
       if (!await CheckImg().loadImg(_imageController.text)) {
         if (mounted) {
-          showCustomDialog(title: 'Error', content: 'Invalid URL format');
+          _showDialog(title: 'Error', content: 'Invalid URL format');
         }
       } else {
         await _updateData(id);
         if (mounted) {
-          HomeTabhomeDialog.showCustomDialog(
-              context: context,
-              title: "Success",
-              content: "Information updated successfully.",
-              action: () {
-                Navigator.of(context).pop();
-              });
+          // showCustomDialog(
+          //     context: context,
+          //     title: "Success",
+          //     content: "Information updated successfully.",
+          //     action: () {
+          //       Navigator.of(context).pop();
+          //     });
         }
       }
     }
@@ -364,7 +353,7 @@ class _HomeScreensState extends State<HomeScreens> {
   }
 
   void _showCancelDialog(
-      {required BuildContext context, required ModelUser userRemote}) {
+      {required BuildContext context, required ModelUser userRemove}) {
     showDialog(
       context: context,
       builder: (context) {
@@ -379,19 +368,16 @@ class _HomeScreensState extends State<HomeScreens> {
             CupertinoDialogAction(
               onPressed: () async {
                 Navigator.of(context).pop();
-                // setState(() {
-                //   filteredUsers.remove(userRemote);
-                // });
-                bool _deleteSuccess = await _deletaData(id: userRemote.id);
+                context
+                    .read<HomeTabhomeProvider>()
+                    .deleteDataTmp(userRemove); // delete
+                bool _deleteSuccess = await _deletaData(id: userRemove.id);
                 if (_deleteSuccess) {
-                  showCustomDialog(
+                  _showDialog(
                       title: 'Success', content: 'User deleted successfully.');
                 } else {
-                  // setState(() {
-                  //   filteredUsers.add(userRemote);
-                  // });
-
-                  showCustomDialog(
+                  context.read<HomeTabhomeProvider>().addDataTmp(userRemove);
+                  _showDialog(
                       title: 'Error',
                       content: 'Failed to delete the user from the server.');
                 }
@@ -414,8 +400,7 @@ class _HomeScreensState extends State<HomeScreens> {
     }
   }
 
-  showCustomDialog({required String title, required String content}) {
-    HomeTabhomeDialog.showCustomDialog(
-        context: context, title: title, content: content);
+  _showDialog({required String title, required String content}) {
+    return showCustomDialog(context: context, title: title, content: content);
   }
 }
