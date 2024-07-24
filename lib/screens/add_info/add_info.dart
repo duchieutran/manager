@@ -17,7 +17,6 @@ class AddInfo extends StatefulWidget {
 }
 
 class _AddInfoState extends State<AddInfo> {
-  // TODO : da xu ly
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
@@ -129,7 +128,7 @@ class _AddInfoState extends State<AddInfo> {
                 ],
               ),
             ),
-            // TODO: da tim hieu
+            //
             Align(
               child: Container(
                 margin: const EdgeInsets.all(5),
@@ -158,7 +157,7 @@ class _AddInfoState extends State<AddInfo> {
         _emailController.text.isEmpty ||
         _addressController.text.isEmpty ||
         _imageController.text.isEmpty) {
-      // TODO: check mounted
+      //
       if (mounted) {
         _showDialog(
             title: "Validation Error", content: "Please fill in all fields.");
@@ -215,7 +214,6 @@ class _AddInfoState extends State<AddInfo> {
   }
 
   Future<void> _addUser() async {
-    // TODO: da xu ly
     // neu khong can thiet phai dung den local thi khong can tao bien local
     ModelUser user = ModelUser(
       name: _nameController.text,

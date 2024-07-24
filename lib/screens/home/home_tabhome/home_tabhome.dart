@@ -1,3 +1,4 @@
+import 'package:appdemo/global/api/api_error.dart';
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
@@ -167,11 +168,14 @@ class _HomeScreensState extends State<HomeScreens> {
   }
 
   Future<void> getData() async {
-    final List<ModelUser> tmp = await HomeService().getData();
-    if (mounted) {
+    try {
+      final List<ModelUser> tmp = await HomeService().getData();
       setState(() {
         filteredUsers = tmp;
       });
+    } catch (e) {
+      ApiError error = e as ApiError;
+      _showDialog(title: 'Message', content: error.errorMessage.toString());
     }
   }
 
@@ -191,7 +195,6 @@ class _HomeScreensState extends State<HomeScreens> {
                 itemCount: fillerTitle.length,
                 itemBuilder: (context, index) {
                   final title = fillerTitle[index];
-
                   return RadioListTile(
                     value: title.toLowerCase(),
                     title: Text(title),
@@ -225,6 +228,12 @@ class _HomeScreensState extends State<HomeScreens> {
       if (mounted) {
         setState(() {
           filteredUsers = [];
+          ApiError error = e as ApiError;
+          _showDialog(
+            title: "Message",
+            content: error.errorMessage.toString(),
+            action: () {},
+          );
         });
       }
     }
@@ -371,9 +380,8 @@ class _HomeScreensState extends State<HomeScreens> {
                 setState(() {
                   filteredUsers.remove(userRemote);
                 });
-                bool deleteSuccess = await _deletaData(id: userRemote.id);
-
-                if (deleteSuccess) {
+                bool _deleteSuccess = await _deletaData(id: userRemote.id);
+                if (_deleteSuccess) {
                   _showDialog(
                       title: 'Success', content: 'User deleted successfully.');
                 } else {
