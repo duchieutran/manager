@@ -185,29 +185,31 @@ class _HomeScreensState extends State<HomeScreens> {
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.3,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(width: 5, color: Colors.black),
-              ),
-              child: ListView.builder(
-                itemCount: fillerTitle.length,
-                itemBuilder: (context, index) {
-                  final title = fillerTitle[index];
-                  return RadioListTile(
-                    value: title.toLowerCase(),
-                    title: Text(title),
-                    groupValue: _key,
-                    onChanged: (value) {
-                      setState(() {
-                        _key = value!;
-                      });
-                      _searchShowInfo(_searchController.text);
-                      Navigator.pop(context);
-                    },
-                  );
-                },
+            return Material(
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.3,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(width: 5, color: Colors.black),
+                ),
+                child: ListView.builder(
+                  itemCount: fillerTitle.length,
+                  itemBuilder: (context, index) {
+                    final title = fillerTitle[index];
+                    return RadioListTile(
+                      value: title.toLowerCase(),
+                      title: Text(title),
+                      groupValue: _key,
+                      onChanged: (value) {
+                        setState(() {
+                          _key = value!;
+                        });
+                        _searchShowInfo(_searchController.text);
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
               ),
             );
           },
