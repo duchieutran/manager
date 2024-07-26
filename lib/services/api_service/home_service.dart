@@ -6,12 +6,11 @@ import 'package:appdemo/services/reponsitory/home_reponsitory.dart';
 
 class HomeService extends HomeReponsitory {
   final RestClient _restClient = RestClient(
-      baseURL: "https://66879a5f0bc7155dc0184943.mockapi.io/api/v1/users");
+      baseURL: "https://66879a5f0bc7155dc0184943.mockapi.io/api/v1/users1");
   final dio = Dio();
 
   @override
   Future<bool> createData(ModelUser user) async {
-    // print(user.toJSON());
     try {
       final response = await _restClient.post('/user', data: user.toJSON());
       if (response is Map) {
@@ -27,7 +26,7 @@ class HomeService extends HomeReponsitory {
   @override
   Future<bool> deteleData(String id) async {
     try {
-      await _restClient.delete('/user1/$id');
+      await _restClient.delete('/user/$id');
       return true;
     } catch (e) {
       rethrow;

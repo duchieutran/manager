@@ -10,7 +10,7 @@ class RestClient {
         // la url chung cua restAPI
         baseUrl: baseURL,
         // thoi gian toi da ket noi den sever
-        connectTimeout: const Duration(seconds: 5),
+        connectTimeout: const Duration(minutes: 20),
         // thoi gian doi da nhan respon tu sever
         receiveTimeout: const Duration(seconds: 5),
         // kieu tra ve cua response
@@ -19,14 +19,40 @@ class RestClient {
     _dio = Dio(_option);
 
     _dio.interceptors.add(PrettyDioLogger(
-      requestHeader: false,
-      requestBody: false,
-      responseHeader: false,
+      requestHeader: true,
+      requestBody: true,
+      responseHeader: true,
       responseBody: true,
       error: true,
-      maxWidth: 90,
+      maxWidth: 180,
       compact: true,
     ));
+
+    _dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (RequestOptions options, RequestInterceptorHandler handler) {
+          // Do something before request is sent.
+          // If you want to resolve the request with custom data,
+          // you can resolve a `Response` using `handler.resolve(response)`.
+          // If you want to reject the request with a error message,
+          // you can reject with a `DioException` using `handler.reject(dioError)`.
+          return handler.next(options);
+        },
+        onResponse: (Response response, ResponseInterceptorHandler handler) {
+          // Do something with response data.
+          // If you want to reject the request with a error message,
+          // you can reject a `DioException` object using `handler.reject(dioError)`.
+          return handler.next(response);
+        },
+        onError: (DioException error, ErrorInterceptorHandler handler) {
+          // Do something with response error.
+          // If you want to resolve the request with some custom data,
+          // you can resolve a `Response` object using `handler.resolve(response)`.
+          print('hello Hieu $error');
+          return handler.next(error);
+        },
+      ),
+    );
   }
 
   Future<dynamic> get(
@@ -35,7 +61,7 @@ class RestClient {
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
-    void Function(int, int)? onReceiveProgress,
+    ProgressCallback? onReceiveProgress,
   }) async {
     try {
       final Response<dynamic> _response = await _dio.get(path,
@@ -141,14 +167,15 @@ class RestClient {
         case DioExceptionType.connectionTimeout:
           return ApiError(
               errorCode: "CONNECT_TIMEOUT",
-              errorMessage: "Co loi ket noi den sever");
+              errorMessage: "Hết hạn kết nối đến sever !");
         case DioExceptionType.sendTimeout:
           return ApiError(
               errorCode: "SEND_TIMEOUT",
-              errorMessage: "Co loi khi gui den sever");
+              errorMessage: "Thời gian gửi hết hạn !");
         case DioExceptionType.receiveTimeout:
           return ApiError(
-              errorCode: "RECEIVE_TIMEOUT", errorMessage: "Co loi receive");
+              errorCode: "RECEIVE_TIMEOUT",
+              errorMessage: "Lỗi kết nối recerive time !");
         case DioExceptionType.badResponse:
           if (e.response?.data != null && e.response is Map) {
             String code = '';
