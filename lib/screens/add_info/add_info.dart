@@ -1,11 +1,10 @@
 import 'package:appdemo/global/app_router.dart';
-import 'package:appdemo/models/model_user.dart';
+import 'package:appdemo/provider/add_provider.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
-import 'package:appdemo/widgets/check_img.dart';
-import 'package:appdemo/services/api_service/home_sevice.dart';
 import 'package:appdemo/widgets/main_app_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class AddInfo extends StatefulWidget {
   const AddInfo({
@@ -17,26 +16,9 @@ class AddInfo extends StatefulWidget {
 }
 
 class _AddInfoState extends State<AddInfo> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _addressController = TextEditingController();
-  final TextEditingController _imageController = TextEditingController();
-  final TextEditingController _idController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _addressController.dispose();
-    _imageController.dispose();
-    _idController.dispose();
-    _ageController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<AddProvider>();
     return Scaffold(
       appBar: MainAppBar(
         title: "Add Information",
@@ -75,35 +57,35 @@ class _AddInfoState extends State<AddInfo> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   EditTextfield(
-                    controller: _nameController,
+                    controller: provider.nameController,
                     title: 'Name',
                     hintText: 'Type your name',
                     icon: const Icon(Icons.person),
                     textInputType: TextInputType.name,
                   ),
                   EditTextfield(
-                    controller: _ageController,
+                    controller: provider.ageController,
                     title: 'Age',
                     hintText: 'Type your age',
                     icon: const Icon(Icons.cake),
                     textInputType: TextInputType.number,
                   ),
                   EditTextfield(
-                    controller: _addressController,
+                    controller: provider.addressController,
                     title: 'Address',
                     hintText: 'Type your address',
                     icon: const Icon(Icons.location_city),
                     textInputType: TextInputType.text,
                   ),
                   EditTextfield(
-                    controller: _emailController,
+                    controller: provider.emailController,
                     title: 'Email',
                     hintText: 'Type your email',
                     icon: const Icon(Icons.email),
                     textInputType: TextInputType.emailAddress,
                   ),
                   EditTextfield(
-                    controller: _imageController,
+                    controller: provider.imageController,
                     title: 'Image',
                     hintText: 'Type your image',
                     icon: const Icon(Icons.image),
@@ -115,7 +97,7 @@ class _AddInfoState extends State<AddInfo> {
                         backgroundColor:
                             const Color.fromARGB(255, 101, 179, 243)),
                     onPressed: () {
-                      _checkValidate();
+                      _checkValidate(provider);
                     },
                     child: const Text(
                       'Submit',
@@ -152,37 +134,35 @@ class _AddInfoState extends State<AddInfo> {
     );
   }
 
-  Future<void> _checkValidate() async {
-    if (_nameController.text.isEmpty ||
-        _emailController.text.isEmpty ||
-        _addressController.text.isEmpty ||
-        _imageController.text.isEmpty) {
-      //
+  Future<void> _checkValidate(AddProvider provider) async {
+    if (!provider.checkEmpty()) {
       if (mounted) {
         _showDialog(
-            title: "Validation Error", content: "Please fill in all fields.");
+            title: "Ôi Đại Vương", content: "Ngài còn nhập thiếu kìa !");
       }
     } else {
-      if (!await CheckImg().loadImg(_imageController.text)) {
-        if (mounted) {
-          _showDialog(title: "Error", content: "Invalid image URL.");
-        }
-      } else {
-        await _addUser();
+      if (!await provider.loadImg()) {
         if (mounted) {
           _showDialog(
-              title: "Success",
-              content: "Add profile complete.",
+              title: "Ôi Đại Vương",
+              content: "Đường dẫn ảnh của ngài lỗi rồi.!");
+        }
+      } else {
+        await provider.addUser();
+        if (mounted) {
+          _showDialog(
+              title: "Đại Vương",
+              content: "Thêm thành công rồi thưa ngài !",
               actions: [
                 CupertinoDialogAction(
-                  child: const Text("OK"),
+                  child: const Text("Hồi cung"),
                   onPressed: () {
                     Navigator.of(context)
                         .pushNamed(AppRouter.home, arguments: false);
                   },
                 ),
                 CupertinoDialogAction(
-                  child: const Text("Stay here"),
+                  child: const Text("Tá túc"),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
@@ -211,23 +191,5 @@ class _AddInfoState extends State<AddInfo> {
             ],
       ),
     );
-  }
-
-  Future<void> _addUser() async {
-    // neu khong can thiet phai dung den local thi khong can tao bien local
-    ModelUser user = ModelUser(
-      name: _nameController.text,
-      email: _emailController.text,
-      address: _addressController.text,
-      image: _imageController.text,
-      id: '',
-      age: int.tryParse(_ageController.text) ?? 0,
-    );
-
-    try {
-      await HomeService().createData(user);
-    } catch (e) {
-      rethrow;
-    }
   }
 }

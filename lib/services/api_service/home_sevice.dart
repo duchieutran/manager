@@ -1,49 +1,36 @@
-import 'dart:convert';
 import 'package:appdemo/global/api/api_error.dart';
 import 'package:appdemo/global/api/rest_client.dart';
-import 'package:http/http.dart' as http;
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/services/reponsitory/home_reponsitory.dart';
 
 class HomeService extends HomeReponsitory {
-  final RestClient _dio =
+  final RestClient _restClient =
       RestClient('https://66879a5f0bc7155dc0184943.mockapi.io/api/v1/users');
 
   @override
   Future<ModelUser> createData(ModelUser user) async {
     try {
-      final response = await http.post(
-        Uri.parse(
-            "https://66879a5f0bc7155dc0184943.mockapi.io/api/v1/users/user"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(user.toJSON()),
-      );
-      if (response.statusCode == 201) {
+      final response = await _restClient.post('/user', data: user.toJSON());
+      if (response is Map<String, dynamic>) {
+        ModelUser user = ModelUser.fromJSON(response);
         return user;
       } else {
-        throw Exception('Fail create data');
+        throw ApiError.fromResponse(response);
       }
     } catch (e) {
-      throw UnimplementedError();
+      rethrow;
     }
   }
 
   @override
-  Future<bool> deteleData(String id) async {
+  Future<ModelUser> deteleData(String id) async {
     try {
-      final response = await http.delete(
-        Uri.parse(
-            "https://66879a5f0bc7155dc0184943.mockapi.io/api/v1/users/user/$id"),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-      );
-      if (response.statusCode == 200) {
-        return true;
+      final response = await _restClient.delete('/user/$id');
+      if (response is Map<String, dynamic>) {
+        ModelUser user = ModelUser.fromJSON(response);
+        return user;
       } else {
-        throw Exception('Failed to delete user');
+        throw ApiError.fromResponse(response);
       }
     } catch (e) {
       rethrow;
@@ -53,7 +40,7 @@ class HomeService extends HomeReponsitory {
   @override
   Future<List<ModelUser>> getData() async {
     try {
-      final response = await _dio.get('/user');
+      final response = await _restClient.get('/user');
       if (response is List<dynamic>) {
         final user = response;
         List<ModelUser> users = user.map((e) => ModelUser.fromJSON(e)).toList();
@@ -69,7 +56,8 @@ class HomeService extends HomeReponsitory {
   Future<List<ModelUser>> searchData(String key, String value) async {
     final tmpValue = value.toLowerCase();
     try {
-      final response = await _dio.get('/user', queryParameters: {key: value});
+      final response =
+          await _restClient.get('/user', queryParameters: {key: value});
       List<dynamic> tmp = response.data;
       List<ModelUser> users = tmp
           .map((value) => ModelUser.fromJSON(value))
@@ -87,19 +75,14 @@ class HomeService extends HomeReponsitory {
   }
 
   @override
-  Future<bool> updateData(String id, Map<String, dynamic> data) async {
+  Future<ModelUser> updateData(String id, Map<String, dynamic> data) async {
     try {
-      final response = await http.put(
-          Uri.parse(
-              'https://66879a5f0bc7155dc0184943.mockapi.io/api/v1/users/user/$id'),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8'
-          },
-          body: jsonEncode(data));
-      if (response.statusCode == 200) {
-        return true;
+      final response = await _restClient.put('/user/$id', data: data);
+      if (response is Map<String, dynamic>) {
+        ModelUser user = ModelUser.fromJSON(response);
+        return user;
       } else {
-        throw 'Fail !';
+        throw ApiError.fromResponse(response);
       }
     } catch (e) {
       rethrow;

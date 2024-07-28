@@ -79,9 +79,12 @@ class RestClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
-      Response<dynamic> response = await _dio.put(
-        path,
-      );
+      Response<dynamic> response = await _dio.put(path,
+          data: data,
+          queryParameters: queryParameters,
+          options: options,
+          cancelToken: cancelToken,
+          onReceiveProgress: onReceiveProgress);
       return response.data;
     } catch (e) {
       return _mapError(e);
@@ -151,6 +154,7 @@ class RestClient {
           if (e.response?.data != null && e.response?.data is Map) {
             String code = '';
             try {
+              // vì bên trên kiểm check null rồi nên bên dưới mới được sử dụng
               dynamic error = e.response!.data;
               code = error['code'];
               if (code == '404') {
@@ -173,6 +177,10 @@ class RestClient {
           }
 
         default:
+          return ApiError(
+            errorCode: '=))) ???',
+            errorMessage: 'Lỗi dì vậy má =)))) !',
+          );
       }
     }
     return ApiError(extraData: e);

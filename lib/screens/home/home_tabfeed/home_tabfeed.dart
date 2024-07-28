@@ -1,6 +1,7 @@
+import 'package:appdemo/provider/home_provider.dart';
 import 'package:appdemo/screens/home/home_tabfeed/widgets/feed_textlogo.dart';
-import 'package:appdemo/services/api_service/home_sevice.dart';
-import '../../../models/model_user.dart';
+import 'package:appdemo/screens/home/widgets/home_dialog.dart';
+import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 
@@ -12,92 +13,100 @@ class FeedSreen extends StatefulWidget {
 }
 
 class _FeedSreenState extends State<FeedSreen> {
-  List<ModelUser> users = [];
-  bool _isLoading = true;
-
-  getData() async {
-    final List<ModelUser> tmp = await HomeService().getData();
-    setState(() {
-      users = tmp;
-      _isLoading = false;
-    });
-  }
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_isLoading) {
-      getData();
-    }
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final init = Provider.of<HomeProvider>(context, listen: false);
+      init.getData();
+      init.setLoading(true);
+    });
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
-        ? const Center(
-            child: CircularProgressIndicator(),
-          )
-        : users.isEmpty
+    return Consumer<HomeProvider>(
+      builder: (context, homeProvider, child) {
+        return homeProvider.getLoading()
             ? const Center(
-                child: Text("Không Có Giá Trị !"),
+                child: CircularProgressIndicator(),
               )
-            : CarouselSlider.builder(
-                itemCount: users.length,
-                itemBuilder: (context, index, realIndex) {
-                  final user = users[index];
-                  return Card(
-                    elevation: 10,
-                    color: const Color(0xFF7FCCF0),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              RichText(
-                                text: TextSpan(children: [
-                                  FeedTextlogo().textLogo(
-                                      text: "V", color: Colors.purple),
-                                  FeedTextlogo()
-                                      .textLogo(text: "I", color: Colors.red),
-                                  FeedTextlogo().textLogo(
-                                      text: "S", color: Colors.yellow),
-                                  FeedTextlogo()
-                                      .textLogo(text: "A", color: Colors.green),
-                                ]),
+            : !homeProvider.checkData
+                ? const ShowCustomDialog(
+                    title: 'Lỗi',
+                    content: 'Đại vương ơi, lỗi kết nối rồi !',
+                  )
+                // TODO : showDialog
+                : homeProvider.users.isEmpty
+                    ? const ShowCustomDialog(
+                        title: 'Lỗi',
+                        content:
+                            'Ôi đại vương, không có dữ liệu để hiển thị rồi !',
+                      )
+                    // TODO : showDialog
+                    : CarouselSlider.builder(
+                        itemCount: homeProvider.users.length,
+                        itemBuilder: (context, index, realIndex) {
+                          final user = homeProvider.users[index];
+                          return Card(
+                            elevation: 10,
+                            color: const Color(0xFF7FCCF0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      RichText(
+                                        text: TextSpan(children: [
+                                          FeedTextlogo().textLogo(
+                                              text: "V", color: Colors.purple),
+                                          FeedTextlogo().textLogo(
+                                              text: "I", color: Colors.red),
+                                          FeedTextlogo().textLogo(
+                                              text: "S", color: Colors.yellow),
+                                          FeedTextlogo().textLogo(
+                                              text: "A", color: Colors.green),
+                                        ]),
+                                      ),
+                                      ClipOval(
+                                          child: Image(
+                                        image: NetworkImage(user.image),
+                                        width: 65,
+                                        height: 65,
+                                        fit: BoxFit.cover,
+                                      ))
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Text(
+                                    user.name,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 25),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Text(
+                                    'Country : ${user.address}',
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 18),
+                                  )
+                                ],
                               ),
-                              ClipOval(
-                                  child: Image(
-                                image: NetworkImage(user.image),
-                                width: 65,
-                                height: 65,
-                                fit: BoxFit.cover,
-                              ))
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            user.name,
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 25),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Text(
-                            'Country : ${user.address}',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.w500, fontSize: 18),
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                },
-                options:
-                    CarouselOptions(enableInfiniteScroll: true, height: 230));
+                            ),
+                          );
+                        },
+                        options: CarouselOptions(
+                            enableInfiniteScroll: true, height: 230),
+                      );
+      },
+    );
   }
 }

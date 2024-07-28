@@ -1,13 +1,13 @@
-import 'package:appdemo/global/api/api_error.dart';
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
+import 'package:appdemo/provider/edit_provider.dart';
+import 'package:appdemo/provider/home_provider.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
-import 'package:appdemo/services/api_service/home_sevice.dart';
-import 'package:appdemo/widgets/check_img.dart';
-import 'package:appdemo/widgets/main_progress.dart';
+import 'package:appdemo/screens/home/widgets/home_dialog.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreens extends StatefulWidget {
   const HomeScreens({super.key});
@@ -17,38 +17,14 @@ class HomeScreens extends StatefulWidget {
 }
 
 class _HomeScreensState extends State<HomeScreens> {
-  List<ModelUser> filteredUsers = [];
-  late TextEditingController _searchController;
-  late TextEditingController _nameController;
-  late TextEditingController _emailController;
-  late TextEditingController _addressController;
-  late TextEditingController _imageController;
-  late TextEditingController _ageController;
-  String _key = 'id';
-  List<String> fillerTitle = ['ID', 'Name', 'Address', 'Age', 'Email'];
-
   @override
   void initState() {
-    _searchController = TextEditingController();
-    _nameController = TextEditingController();
-    _emailController = TextEditingController();
-    _addressController = TextEditingController();
-    _imageController = TextEditingController();
-    _ageController = TextEditingController();
-
-    getData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final init = Provider.of<HomeProvider>(context, listen: false);
+      init.getData();
+      init.setLoading(true);
+    });
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _nameController.dispose();
-    _emailController.dispose();
-    _addressController.dispose();
-    _imageController.dispose();
-    _ageController.dispose();
-    super.dispose();
   }
 
   @override
@@ -59,7 +35,7 @@ class _HomeScreensState extends State<HomeScreens> {
           Padding(
             padding: const EdgeInsets.all(8),
             child: TextField(
-              controller: _searchController,
+              controller: context.watch<HomeProvider>().searchController,
               decoration: InputDecoration(
                 hintText: 'Search...',
                 prefixIcon: const Icon(Icons.search),
@@ -74,83 +50,92 @@ class _HomeScreensState extends State<HomeScreens> {
                 ),
               ),
               onChanged: (value) {
-                _searchShowInfo(value);
+                Provider.of<HomeProvider>(context, listen: false)
+                    .searchShowInfo(
+                        Provider.of<HomeProvider>(context, listen: false).key,
+                        value);
               },
             ),
           ),
           Expanded(
-            child: filteredUsers.isEmpty
-                ? const MainProgress()
-                : ListView.builder(
-                    itemCount: filteredUsers.length,
-                    itemBuilder: (context, index) {
-                      final user = filteredUsers[index];
-                      return Slidable(
-                        startActionPane: ActionPane(
-                          motion: const ScrollMotion(),
-                          children: [
-                            SlidableAction(
-                              flex: 1,
-                              onPressed: (context) {
-                                Navigator.of(context).pushNamed(
+              child: Consumer<HomeProvider>(
+            builder: (context, homeProvider, child) => homeProvider.getLoading()
+                ? const Center(child: CircularProgressIndicator())
+                : !homeProvider.checkData
+                    ? const ShowCustomDialog(
+                        title: 'Lỗi',
+                        content: 'Đại vương ơi, lỗi kết nối sever !')
+                    : homeProvider.users.isEmpty
+                        ? const ShowCustomDialog(
+                            title: 'Lỗi',
+                            content:
+                                'Ôi đại vương, không có dữ liệu để hiển thị rồi !')
+                        : ListView.builder(
+                            itemCount: homeProvider.users.length,
+                            itemBuilder: (context, index) {
+                              final user = homeProvider.users[index];
+                              return Slidable(
+                                startActionPane: ActionPane(
+                                  motion: const ScrollMotion(),
+                                  children: [
+                                    SlidableAction(
+                                      flex: 1,
+                                      onPressed: (context) {
+                                        Navigator.of(context).pushNamed(
+                                            AppRouter.showinfo,
+                                            arguments: user);
+                                      },
+                                      backgroundColor: Colors.blue,
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.info,
+                                      label: 'Thông tin',
+                                    )
+                                  ],
+                                ),
+                                endActionPane: ActionPane(
+                                  motion: const DrawerMotion(),
+                                  children: [
+                                    SlidableAction(
+                                      onPressed: (context) {
+                                        _showEditDialog(context, user);
+                                      },
+                                      backgroundColor: Colors.green,
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.edit,
+                                      label: 'Chỉnh sửa',
+                                    ),
+                                    SlidableAction(
+                                      onPressed: (context) {
+                                        _showCancelDialog(
+                                            context: context, userRemote: user);
+                                      },
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.delete,
+                                      label: 'Xoá',
+                                    ),
+                                  ],
+                                ),
+                                child: ListTile(
+                                  onTap: () => Navigator.of(context).pushNamed(
                                     AppRouter.showinfo,
-                                    arguments: user);
-                              },
-                              backgroundColor: Colors.blue,
-                              foregroundColor: Colors.white,
-                              icon: Icons.info,
-                              label: 'Info',
-                            )
-                          ],
-                        ),
-                        endActionPane: ActionPane(
-                          motion: const DrawerMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (context) {
-                                setState(() {
-                                  _showEditDialog(context, user);
-                                });
-                              },
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.white,
-                              icon: Icons.edit,
-                              label: 'Modify',
-                            ),
-                            SlidableAction(
-                              onPressed: (context) {
-                                setState(() {
-                                  _showCancelDialog(
-                                      context: context, userRemote: user);
-                                });
-                              },
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
-                              icon: Icons.delete,
-                              label: 'Delete',
-                            ),
-                          ],
-                        ),
-                        child: ListTile(
-                          onTap: () => Navigator.of(context).pushNamed(
-                            AppRouter.showinfo,
-                            arguments: user,
+                                    arguments: user,
+                                  ),
+                                  leading: ClipOval(
+                                    child: Image(
+                                      image: NetworkImage(user.image),
+                                      fit: BoxFit.cover,
+                                      width: 50,
+                                      height: 50,
+                                    ),
+                                  ),
+                                  title: Text(user.name),
+                                  subtitle: Text(user.email),
+                                ),
+                              );
+                            },
                           ),
-                          leading: ClipOval(
-                            child: Image(
-                              image: NetworkImage(user.image),
-                              fit: BoxFit.cover,
-                              width: 50,
-                              height: 50,
-                            ),
-                          ),
-                          title: Text(user.name),
-                          subtitle: Text(user.email),
-                        ),
-                      );
-                    },
-                  ),
-          ),
+          )),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -167,47 +152,37 @@ class _HomeScreensState extends State<HomeScreens> {
     );
   }
 
-  Future<void> getData() async {
-    try {
-      final List<ModelUser> tmp = await HomeService().getData();
-      setState(() {
-        filteredUsers = tmp;
-      });
-    } catch (e) {
-      ApiError error = e as ApiError;
-      _showDialog(title: 'Message', content: error.errorMessage.toString());
-    }
-  }
-
   void _showFilterDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
-            return Container(
-              height: MediaQuery.of(context).size.height * 0.3,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(width: 5, color: Colors.black),
-              ),
-              child: ListView.builder(
-                itemCount: fillerTitle.length,
-                itemBuilder: (context, index) {
-                  final title = fillerTitle[index];
-                  return RadioListTile(
-                    value: title.toLowerCase(),
-                    title: Text(title),
-                    groupValue: _key,
-                    onChanged: (value) {
-                      setState(() {
-                        _key = value!;
-                      });
-                      _searchShowInfo(_searchController.text);
-                      Navigator.pop(context);
-                    },
-                  );
-                },
+            final provider = Provider.of<HomeProvider>(context);
+            return Material(
+              child: Container(
+                height: MediaQuery.of(context).size.height * 0.3,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(width: 5, color: Colors.black),
+                ),
+                child: ListView.builder(
+                  itemCount: provider.fillerTitle.length,
+                  itemBuilder: (context, index) {
+                    final title = provider.fillerTitle[index];
+                    return RadioListTile(
+                      value: title.toLowerCase(),
+                      title: Text(title),
+                      groupValue: provider.key,
+                      onChanged: (value) {
+                        provider.setKey(value!);
+                        provider.searchShowInfo(
+                            provider.key, provider.searchController.text);
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
               ),
             );
           },
@@ -216,77 +191,51 @@ class _HomeScreensState extends State<HomeScreens> {
     );
   }
 
-  Future<void> _searchShowInfo(String value) async {
-    try {
-      final List<ModelUser> tmp = await HomeService().searchData(_key, value);
-      if (mounted) {
-        setState(() {
-          filteredUsers = tmp;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          filteredUsers = [];
-          ApiError error = e as ApiError;
-          _showDialog(
-            title: "Message",
-            content: error.errorMessage.toString(),
-            action: () {},
-          );
-        });
-      }
-    }
-  }
-
   void _showEditDialog(BuildContext context, ModelUser user) {
-    _nameController.text = user.name;
-    _ageController.text = user.age.toString();
-    _addressController.text = user.address;
-    _emailController.text = user.email;
-    _imageController.text = user.image;
+    final provider = Provider.of<EditProvider>(context, listen: false);
+    provider.defaultValueTextField(user);
     showDialog(
       context: context,
       builder: (context) {
         return SingleChildScrollView(
           child: AlertDialog(
-            title: const Text('Edit profile'),
+            title: const Center(child: Text('Edit profile')),
             content: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.9,
+              width: MediaQuery.of(context).size.width * 0.7,
               height: MediaQuery.of(context).size.height * 0.6,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   EditTextfield(
-                    controller: _nameController,
+                    controller: provider.nameController,
                     title: 'Name',
                     hintText: 'Type your name',
                     icon: const Icon(Icons.person),
                     textInputType: TextInputType.name,
                   ),
                   EditTextfield(
-                    controller: _ageController,
+                    controller: provider.ageController,
                     title: 'Age',
                     hintText: 'Type your age',
                     icon: const Icon(Icons.cake),
                     textInputType: TextInputType.number,
                   ),
                   EditTextfield(
-                    controller: _addressController,
+                    controller: provider.addressController,
                     title: 'Address',
                     hintText: 'Type your address',
                     icon: const Icon(Icons.location_city),
                     textInputType: TextInputType.name,
                   ),
                   EditTextfield(
-                    controller: _emailController,
+                    controller: provider.emailController,
                     title: 'Email',
                     hintText: 'Type your email',
                     icon: const Icon(Icons.email),
                     textInputType: TextInputType.emailAddress,
                   ),
                   EditTextfield(
-                    controller: _imageController,
+                    controller: provider.imageController,
                     title: 'Image',
                     hintText: 'Type your image',
                     icon: const Icon(Icons.image),
@@ -298,10 +247,10 @@ class _HomeScreensState extends State<HomeScreens> {
                       backgroundColor: const Color.fromARGB(255, 101, 179, 243),
                     ),
                     onPressed: () {
-                      _checkValidate(user.id);
+                      _checkValidate(provider: provider, user: user);
                     },
                     child: const Text(
-                      'Submit',
+                      'Thay Đổi',
                       style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
@@ -318,47 +267,27 @@ class _HomeScreensState extends State<HomeScreens> {
     );
   }
 
-  Future<void> _checkValidate(String id) async {
-    if (_nameController.text.isEmpty ||
-        _emailController.text.isEmpty ||
-        _addressController.text.isEmpty ||
-        _imageController.text.isEmpty ||
-        _ageController.text.isEmpty ||
-        int.tryParse(_ageController.text) == null) {
-      _showDialog(title: "Notification", content: "Fields cannot be empty.");
+  Future<void> _checkValidate(
+      {required EditProvider provider, required ModelUser user}) async {
+    if (!provider.checkEmpty()) {
+      _showDialog(title: "Ôi Đại Vương", content: "Không được để trống đâu ạ.");
     } else {
-      if (!await CheckImg().loadImg(_imageController.text)) {
-        if (mounted) {
-          _showDialog(title: "Error", content: "Invalid URL format.");
-        }
-      } else {
-        await _updateData(id);
+      if (!await provider.loadImg()) {
         if (mounted) {
           _showDialog(
-              title: "Success",
-              content: "Information updated successfully.",
-              action: () {
-                Navigator.of(context).pop();
-              });
+              title: "Ôi Đại Vương", content: "URL này không phải ảnh rồi.");
         }
+      } else {
+        await provider.updateData(user.id);
+        _showDialog(
+            title: "Đại Vương",
+            content: "Sửa thành công rồi đại vương !",
+            action: () {
+              Provider.of<HomeProvider>(context, listen: false).getData();
+              Navigator.of(context).pop();
+            });
       }
     }
-  }
-
-  Future<void> _updateData(String id) async {
-    ModelUser userUpdate = ModelUser(
-        id: id,
-        name: _nameController.text,
-        age: int.tryParse(_ageController.text) ?? 0,
-        address: _addressController.text,
-        email: _emailController.text,
-        image: _imageController.text);
-    await HomeService().updateData(userUpdate.id, userUpdate.toJSON());
-
-    setState(() {
-      final index = filteredUsers.indexWhere((value) => value.id == id);
-      filteredUsers[index] = userUpdate;
-    });
   }
 
   void _showCancelDialog(
@@ -367,34 +296,31 @@ class _HomeScreensState extends State<HomeScreens> {
       context: context,
       builder: (context) {
         return CupertinoAlertDialog(
-          title: const Text("Notification"),
-          content: const Text("Are you sure you want delete =))) ??? "),
+          title: const Text("Đại vương chú ý"),
+          content:
+              Text("Ngài chắc chắn muốn chém đầu ${userRemote.name} chứ ?"),
           actions: [
             CupertinoDialogAction(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
+              child: const Text('Trẫm Tha'),
             ),
             CupertinoDialogAction(
               onPressed: () async {
                 Navigator.of(context).pop();
-                setState(() {
-                  filteredUsers.remove(userRemote);
-                });
-                bool _deleteSuccess = await _deletaData(id: userRemote.id);
-                if (_deleteSuccess) {
+                final homeProvider =
+                    Provider.of<HomeProvider>(context, listen: false);
+                await homeProvider.deletaData(user: userRemote);
+                // bool _deleteSuccess = await _deletaData(id: userRemote.id);
+                if (homeProvider.checkData) {
                   _showDialog(
-                      title: 'Success', content: 'User deleted successfully.');
+                      title: 'Tin Mừng', content: 'Chém đầu thành công .');
                 } else {
-                  setState(() {
-                    filteredUsers.add(userRemote);
-                  });
                   _showDialog(
-                      title: 'Error',
-                      content: 'Failed to delete the user from the server.');
+                      title: 'Toang Rồi',
+                      content: 'Chém đầu thật bại rồi đại vương ơi.');
                 }
-                _searchShowInfo(_searchController.text);
               },
-              child: const Text("Okee"),
+              child: const Text("Chém"),
             ),
           ],
         );
@@ -402,32 +328,15 @@ class _HomeScreensState extends State<HomeScreens> {
     );
   }
 
-  Future<bool> _deletaData({required String id}) async {
-    try {
-      await HomeService().deteleData(id);
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
   void _showDialog(
       {required String title, required String content, VoidCallback? action}) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return CupertinoAlertDialog(
-          title: Text(title),
-          content: Text(content),
-          actions: [
-            CupertinoDialogAction(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (action != null) action();
-              },
-            ),
-          ],
+        return ShowCustomDialog(
+          title: title,
+          content: content,
+          action: action,
         );
       },
     );

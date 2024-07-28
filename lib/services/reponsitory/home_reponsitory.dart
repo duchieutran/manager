@@ -8,10 +8,10 @@ abstract class HomeReponsitory {
   Future<List<ModelUser>> searchData(String key, String value);
 
   // xoa gia tri
-  Future<bool> deteleData(String id);
+  Future<ModelUser> deteleData(String id);
 
   // update gia tri
-  Future<bool> updateData(String id, Map<String, dynamic> data);
+  Future<ModelUser> updateData(String id, Map<String, dynamic> data);
 
   //tao moi gia tri
   Future<ModelUser> createData(ModelUser user);

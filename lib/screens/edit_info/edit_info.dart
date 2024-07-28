@@ -1,11 +1,11 @@
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/models/model_user.dart';
+import 'package:appdemo/provider/edit_provider.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
-import 'package:appdemo/widgets/check_img.dart';
-import 'package:appdemo/services/api_service/home_sevice.dart';
 import 'package:appdemo/widgets/main_app_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EditInfo extends StatefulWidget {
   const EditInfo({super.key, required this.user});
@@ -16,29 +16,18 @@ class EditInfo extends StatefulWidget {
 }
 
 class _EditInfoState extends State<EditInfo> {
-  late ModelUser _user;
-  late TextEditingController nameController;
-  late TextEditingController emailController;
-  late TextEditingController addressController;
-  late TextEditingController imageController;
-  late TextEditingController idController;
-  late TextEditingController ageController;
-  late ModelUser _userUpdate;
-
   @override
   void initState() {
-    _user = widget.user;
-    nameController = TextEditingController(text: _user.name);
-    emailController = TextEditingController(text: _user.email);
-    addressController = TextEditingController(text: _user.address);
-    imageController = TextEditingController(text: _user.image);
-    idController = TextEditingController(text: _user.id);
-    ageController = TextEditingController(text: '${_user.age}');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<EditProvider>().defaultValueTextField(widget.user);
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<EditProvider>();
+
     return Scaffold(
       appBar: MainAppBar(
         title: "Edit Information",
@@ -73,31 +62,31 @@ class _EditInfoState extends State<EditInfo> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 EditTextfield(
-                    controller: nameController,
+                    controller: provider.nameController,
                     title: 'Name',
                     hintText: 'Type your name',
                     icon: const Icon(Icons.person),
                     textInputType: TextInputType.name),
                 EditTextfield(
-                    controller: ageController,
+                    controller: provider.ageController,
                     title: 'Age',
                     hintText: 'Type your age',
                     icon: const Icon(Icons.cake),
                     textInputType: TextInputType.number),
                 EditTextfield(
-                    controller: addressController,
+                    controller: provider.addressController,
                     title: 'Address',
                     hintText: 'Type your address',
                     icon: const Icon(Icons.location_city),
                     textInputType: TextInputType.name),
                 EditTextfield(
-                    controller: emailController,
+                    controller: provider.emailController,
                     title: 'Email',
                     hintText: 'Type your email',
                     icon: const Icon(Icons.email),
                     textInputType: TextInputType.name),
                 EditTextfield(
-                    controller: imageController,
+                    controller: provider.imageController,
                     title: 'Image',
                     hintText: 'Type your image',
                     icon: const Icon(Icons.image),
@@ -108,10 +97,10 @@ class _EditInfoState extends State<EditInfo> {
                       backgroundColor:
                           const Color.fromARGB(255, 101, 179, 243)),
                   onPressed: () {
-                    _checkValidate();
+                    _checkValidate(provider, context);
                   },
                   child: const Text(
-                    'Submit',
+                    'Thay đổi',
                     style: TextStyle(
                         fontSize: 25,
                         fontWeight: FontWeight.bold,
@@ -143,25 +132,33 @@ class _EditInfoState extends State<EditInfo> {
     );
   }
 
-  Future<void> _checkValidate() async {
-    if (nameController.text.isEmpty ||
-        emailController.text.isEmpty ||
-        addressController.text.isEmpty ||
-        imageController.text.isEmpty ||
-        ageController.text.isEmpty ||
-        int.tryParse(ageController.text) == null) {
-      _showDialog(title: "Notification", content: "Fields cannot be empty.");
+  Future<void> _checkValidate(
+      EditProvider provider, BuildContext content) async {
+    if (provider.checkEmpty()) {
+      _showDialog(
+          title: "Ôi Đại Vương",
+          content: "Ngài không được để trống các ô đâu =))");
     } else {
-      if (!await CheckImg().loadImg(imageController.text)) {
-        if (mounted) {
-          _showDialog(title: "Error", content: "Invalid URL format.");
-        }
-      } else {
-        await _updateData();
+      if (!await provider.loadImg()) {
         if (mounted) {
           _showDialog(
-              title: "Success",
-              content: "Information updated successfully.",
+              title: "Ôi Đại Vương",
+              content: "Ngài sai định dạng URL ảnh rồi.");
+        }
+      } else {
+        await provider.updateData(widget.user.id);
+        if (provider.checkData) {
+          _showDialog(
+              title: "Đại Vương",
+              content: "Ngài tuyệt vời lắm !",
+              action: () {
+                Navigator.of(context)
+                    .pushNamed(AppRouter.home, arguments: false);
+              });
+        } else {
+          _showDialog(
+              title: "Ôi Đại Vương",
+              content: "Không được rồi thưa ngài !",
               action: () {
                 Navigator.of(context)
                     .pushNamed(AppRouter.home, arguments: false);
@@ -191,16 +188,5 @@ class _EditInfoState extends State<EditInfo> {
         );
       },
     );
-  }
-
-  Future<void> _updateData() async {
-    _userUpdate = ModelUser(
-        id: _user.id,
-        name: nameController.text,
-        age: int.tryParse(ageController.text) ?? 0,
-        address: addressController.text,
-        email: emailController.text,
-        image: imageController.text);
-    await HomeService().updateData(_userUpdate.id, _userUpdate.toJSON());
   }
 }
