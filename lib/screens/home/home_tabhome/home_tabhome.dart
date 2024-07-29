@@ -54,6 +54,7 @@ class _HomeScreensState extends State<HomeScreens> {
                     .searchShowInfo(
                         Provider.of<HomeProvider>(context, listen: false).key,
                         value);
+                        
               },
             ),
           ),
@@ -176,8 +177,6 @@ class _HomeScreensState extends State<HomeScreens> {
                       groupValue: provider.key,
                       onChanged: (value) {
                         provider.setKey(value!);
-                        provider.searchShowInfo(
-                            provider.key, provider.searchController.text);
                         Navigator.pop(context);
                       },
                     );

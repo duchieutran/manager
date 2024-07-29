@@ -59,12 +59,14 @@ class HomeProvider with ChangeNotifier {
   Future<void> searchShowInfo(String key, String value) async {
     try {
       final List<ModelUser> tmp = await HomeService().searchData(key, value);
-      filter = tmp;
+      users = tmp;
       checkData = true;
+      _loading = false;
       notifyListeners();
     } catch (e) {
-      filter = [];
+      users = [];
       checkData = false;
+      _loading = false;
       notifyListeners();
     }
   }

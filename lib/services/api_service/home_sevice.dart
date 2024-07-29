@@ -38,12 +38,25 @@ class HomeService extends HomeReponsitory {
   }
 
   @override
-  Future<List<ModelUser>> getData() async {
+  Future<List<ModelUser>> getData({String? key, String? onValue}) async {
     try {
-      final response = await _restClient.get('/user');
+      final param = (key != null && onValue != null) ? {key: onValue} : null;
+
+      final response = await _restClient.get('/user', queryParameters: param);
+
       if (response is List<dynamic>) {
-        final user = response;
-        List<ModelUser> users = user.map((e) => ModelUser.fromJSON(e)).toList();
+        final users = response.map((e) => ModelUser.fromJSON(e)).toList();
+        if (key != null && onValue != null) {
+          final tmpValue = onValue.toLowerCase();
+          return users
+              .where((e) =>
+                  e.id.toLowerCase().contains(tmpValue) ||
+                  e.name.toLowerCase().contains(tmpValue) ||
+                  e.age.toString().contains(tmpValue) ||
+                  e.address.toLowerCase().contains(tmpValue) ||
+                  e.email.toLowerCase().contains(tmpValue))
+              .toList();
+        }
         return users;
       }
       throw ApiError.fromResponse(response);
