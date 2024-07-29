@@ -29,9 +29,9 @@ class EditProvider with ChangeNotifier {
         imageController.text.isEmpty ||
         ageController.text.isEmpty ||
         int.tryParse(ageController.text) == null) {
-      return false;
-    } else {
       return true;
+    } else {
+      return false;
     }
   }
 

@@ -27,9 +27,14 @@ class HomeProvider with ChangeNotifier {
 
   getLoading() => _loading;
 
-  Future<void> getData() async {
+  Future<void> getData({String? key, String? value}) async {
     try {
-      List<ModelUser> tmp = await HomeService().getData();
+      List<ModelUser> tmp;
+      if (key != null && value != null) {
+        tmp = await HomeService().getData(key: key, onValue: value);
+      } else {
+        tmp = await HomeService().getData();
+      }
       users = tmp;
       checkData = true;
       _loading = false;
@@ -56,20 +61,20 @@ class HomeProvider with ChangeNotifier {
   }
 
   // search data
-  Future<void> searchShowInfo(String key, String value) async {
-    try {
-      final List<ModelUser> tmp = await HomeService().searchData(key, value);
-      users = tmp;
-      checkData = true;
-      _loading = false;
-      notifyListeners();
-    } catch (e) {
-      users = [];
-      checkData = false;
-      _loading = false;
-      notifyListeners();
-    }
-  }
+  // Future<void> searchShowInfo(String key, String value) async {
+  //   try {
+  //     final List<ModelUser> tmp = await HomeService().searchData(key, value);
+  //     users = tmp;
+  //     checkData = true;
+  //     _loading = false;
+  //     notifyListeners();
+  //   } catch (e) {
+  //     users = [];
+  //     checkData = false;
+  //     _loading = false;
+  //     notifyListeners();
+  //   }
+  // }
 
   setKey(String value) {
     key = value;

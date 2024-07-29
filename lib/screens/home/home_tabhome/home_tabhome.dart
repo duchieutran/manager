@@ -50,11 +50,9 @@ class _HomeScreensState extends State<HomeScreens> {
                 ),
               ),
               onChanged: (value) {
-                Provider.of<HomeProvider>(context, listen: false)
-                    .searchShowInfo(
-                        Provider.of<HomeProvider>(context, listen: false).key,
-                        value);
-                        
+                Provider.of<HomeProvider>(context, listen: false).getData(
+                    key: Provider.of<HomeProvider>(context, listen: false).key,
+                    value: value);
               },
             ),
           ),
