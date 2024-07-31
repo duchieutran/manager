@@ -17,10 +17,15 @@ class HomeScreens extends StatefulWidget {
 }
 
 class _HomeScreensState extends State<HomeScreens> {
+  //TODO
+  late final HomeProvider init;
   @override
   void initState() {
+    init = Provider.of<HomeProvider>(context, listen: false);
+    // init
+    //   ..getData()
+    //   ..setLoading(true);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final init = Provider.of<HomeProvider>(context, listen: false);
       init.getData();
       init.setLoading(true);
     });
@@ -35,7 +40,7 @@ class _HomeScreensState extends State<HomeScreens> {
           Padding(
             padding: const EdgeInsets.all(8),
             child: TextField(
-              controller: context.watch<HomeProvider>().searchController,
+              controller: init.searchController, //TODO
               decoration: InputDecoration(
                 hintText: 'Search...',
                 prefixIcon: const Icon(Icons.search),
@@ -50,9 +55,7 @@ class _HomeScreensState extends State<HomeScreens> {
                 ),
               ),
               onChanged: (value) {
-                Provider.of<HomeProvider>(context, listen: false).getData(
-                    key: Provider.of<HomeProvider>(context, listen: false).key,
-                    value: value);
+                init.getData(key: init.key, value: value);
               },
             ),
           ),
@@ -152,29 +155,29 @@ class _HomeScreensState extends State<HomeScreens> {
   }
 
   void _showFilterDialog(BuildContext context) {
+    // TODO: column
+    //TODO :mainaxitalingment
+    //TODO: shinkWrap trong ListView.builder
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
-            final provider = Provider.of<HomeProvider>(context);
-            return Material(
-              child: Container(
-                height: MediaQuery.of(context).size.height * 0.3,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(width: 5, color: Colors.black),
-                ),
+            // final provider = Provider.of<HomeProvider>(context);
+            return Container(
+              height: 300,
+              child: Material(
                 child: ListView.builder(
-                  itemCount: provider.fillerTitle.length,
+                  itemCount: init.fillerTitle.length,
+                  shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    final title = provider.fillerTitle[index];
+                    final title = init.fillerTitle[index];
                     return RadioListTile(
                       value: title.toLowerCase(),
                       title: Text(title),
-                      groupValue: provider.key,
+                      groupValue: init.key,
                       onChanged: (value) {
-                        provider.setKey(value!);
+                        init.setKey(value!);
                         Navigator.pop(context);
                       },
                     );
