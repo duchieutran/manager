@@ -1,5 +1,6 @@
 import 'package:appdemo/screens/add_info/add_info.dart';
 import 'package:appdemo/screens/edit_info/edit_info.dart';
+import 'package:appdemo/test.dart';
 import '../models/model_user.dart';
 import '../screens/home/home.dart';
 import '../screens/login/login_screen.dart';

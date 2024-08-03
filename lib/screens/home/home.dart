@@ -1,3 +1,5 @@
+import 'package:appdemo/provider/connect_provider.dart';
+import 'package:provider/provider.dart';
 import 'home_tabfeed/home_tabfeed.dart';
 import 'widgets/home_tabbar.dart';
 import 'home_tabhome/home_tabhome.dart';
@@ -6,8 +8,31 @@ import 'home_tabsetting/home_tabsetting.dart';
 import '../../widgets/main_app_bar.dart';
 import 'package:flutter/material.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final provider = Provider.of<ConnectProvider>(context);
+    provider.addListener(_checkConnect);
+  }
+
+  @override
+  void dispose() {
+    final provider = Provider.of<ConnectProvider>(context, listen: false);
+    provider.removeListener(_checkConnect);
+    super.dispose();
+  }
+
+  // void _showConnectivityDialog() {
+  //   _checkConnect(connectivityResult);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -47,5 +72,12 @@ class Home extends StatelessWidget {
             ),
           )),
     );
+  }
+
+  void _checkConnect() {
+    final connectivityResult = context.read<ConnectProvider>().messConnect;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(connectivityResult),
+    ));
   }
 }

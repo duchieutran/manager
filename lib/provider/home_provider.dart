@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/services/api_service/home_sevice.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeProvider with ChangeNotifier {
   //seach
@@ -25,8 +28,10 @@ class HomeProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  // get loading
   getLoading() => _loading;
 
+  // get data
   Future<void> getData({String? key, String? value}) async {
     try {
       List<ModelUser> tmp;
@@ -36,6 +41,7 @@ class HomeProvider with ChangeNotifier {
         tmp = await HomeService().getData();
       }
       users = tmp;
+      // await saveUser(users);
       checkData = true;
       _loading = false;
       notifyListeners();
@@ -43,6 +49,29 @@ class HomeProvider with ChangeNotifier {
       checkData = false;
       _loading = false;
       notifyListeners();
+    }
+  }
+
+  // lưu dữ liệu vào bộ nhớ
+  Future<void> saveUser(List<ModelUser> user) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final users = jsonEncode(user);
+    await prefs.setString('user', users);
+  }
+
+  // đọc dữ liệu từ bộ nhớ
+  Future<List<Map<String, dynamic>>> loadUserList() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    // Đọc chuỗi JSON từ SharedPreferences
+    String? userListJson = prefs.getString('userList');
+    if (userListJson != null) {
+      // Chuyển đổi chuỗi JSON thành danh sách Map<String, dynamic>
+      List<dynamic> userListDynamic = jsonDecode(userListJson);
+      List<Map<String, dynamic>> userList =
+          userListDynamic.cast<Map<String, dynamic>>();
+      return userList;
+    } else {
+      return [];
     }
   }
 
@@ -60,22 +89,7 @@ class HomeProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // search data
-  // Future<void> searchShowInfo(String key, String value) async {
-  //   try {
-  //     final List<ModelUser> tmp = await HomeService().searchData(key, value);
-  //     users = tmp;
-  //     checkData = true;
-  //     _loading = false;
-  //     notifyListeners();
-  //   } catch (e) {
-  //     users = [];
-  //     checkData = false;
-  //     _loading = false;
-  //     notifyListeners();
-  //   }
-  // }
-
+  // set key
   setKey(String value) {
     key = value;
     notifyListeners();

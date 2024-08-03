@@ -24,14 +24,11 @@ class _LoginScreenState extends State<LoginScreen> {
     super.initState();
   }
 
-
-
-
   @override
   void dispose() {
     _controllerUser?.dispose();
     _controllerPass?.dispose();
-   super.dispose();
+    super.dispose();
   }
 
   @override
@@ -125,7 +122,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     padding: const EdgeInsets.all(10.0),
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.of(context).pushNamed(AppRouter.home, arguments: false );
+                        Navigator.of(context)
+                            .pushNamed(AppRouter.home, arguments: false);
                       },
                       child: Container(
                         height: 45,
