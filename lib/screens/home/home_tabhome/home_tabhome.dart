@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:appdemo/global/app_router.dart';
+import 'package:appdemo/global/img_path.dart';
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/provider/edit_provider.dart';
 import 'package:appdemo/provider/home_provider.dart';
@@ -66,82 +67,81 @@ class _HomeScreensState extends State<HomeScreens> {
               builder: (context, homeProvider, child) => homeProvider
                       .getLoading()
                   ? const Center(child: CircularProgressIndicator())
-                  : !homeProvider.checkData
+                  : homeProvider.users.isEmpty
                       ? const ShowCustomDialog(
-                          title: 'Lỗi',
-                          content: 'Đại vương ơi, lỗi kết nối sever !')
-                      : homeProvider.users.isEmpty
-                          ? const ShowCustomDialog(
-                              title: 'Lỗi',
-                              content:
-                                  'Ôi đại vương, không có dữ liệu để hiển thị rồi !')
-                          : ListView.builder(
-                              itemCount: homeProvider.users.length,
-                              itemBuilder: (context, index) {
-                                final user = homeProvider.users[index];
-                                return Slidable(
-                                  startActionPane: ActionPane(
-                                    motion: const ScrollMotion(),
-                                    children: [
-                                      SlidableAction(
-                                        flex: 1,
-                                        onPressed: (context) {
-                                          Navigator.of(context).pushNamed(
-                                              AppRouter.showinfo,
-                                              arguments: user);
-                                        },
-                                        backgroundColor: Colors.blue,
-                                        foregroundColor: Colors.white,
-                                        icon: Icons.info,
-                                        label: 'Thông tin',
-                                      )
-                                    ],
+                          title: 'Ôi Đại Vương',
+                          content: 'Đại vương ơi, Không có dữ liệu !')
+                      : ListView.builder(
+                          itemCount: homeProvider.users.length,
+                          itemBuilder: (context, index) {
+                            final user = homeProvider.users[index];
+                            return Slidable(
+                              startActionPane: ActionPane(
+                                motion: const ScrollMotion(),
+                                children: [
+                                  SlidableAction(
+                                    flex: 1,
+                                    onPressed: (context) {
+                                      Navigator.of(context).pushNamed(
+                                          AppRouter.showinfo,
+                                          arguments: user);
+                                    },
+                                    backgroundColor: Colors.blue,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.info,
+                                    label: 'Thông tin',
+                                  )
+                                ],
+                              ),
+                              endActionPane: ActionPane(
+                                motion: const DrawerMotion(),
+                                children: [
+                                  SlidableAction(
+                                    onPressed: (context) {
+                                      _showEditDialog(context, user);
+                                    },
+                                    backgroundColor: Colors.green,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.edit,
+                                    label: 'Chỉnh sửa',
                                   ),
-                                  endActionPane: ActionPane(
-                                    motion: const DrawerMotion(),
-                                    children: [
-                                      SlidableAction(
-                                        onPressed: (context) {
-                                          _showEditDialog(context, user);
-                                        },
-                                        backgroundColor: Colors.green,
-                                        foregroundColor: Colors.white,
-                                        icon: Icons.edit,
-                                        label: 'Chỉnh sửa',
-                                      ),
-                                      SlidableAction(
-                                        onPressed: (context) {
-                                          _showCancelDialog(
-                                              context: context,
-                                              userRemote: user);
-                                        },
-                                        backgroundColor: Colors.red,
-                                        foregroundColor: Colors.white,
-                                        icon: Icons.delete,
-                                        label: 'Xoá',
-                                      ),
-                                    ],
+                                  SlidableAction(
+                                    onPressed: (context) {
+                                      _showCancelDialog(
+                                          context: context, userRemote: user);
+                                    },
+                                    backgroundColor: Colors.red,
+                                    foregroundColor: Colors.white,
+                                    icon: Icons.delete,
+                                    label: 'Xoá',
                                   ),
-                                  child: ListTile(
-                                    onTap: () =>
-                                        Navigator.of(context).pushNamed(
-                                      AppRouter.showinfo,
-                                      arguments: user,
-                                    ),
-                                    leading: ClipOval(
-                                      child: Image(
-                                        image: NetworkImage(user.image),
-                                        fit: BoxFit.cover,
-                                        width: 50,
-                                        height: 50,
-                                      ),
-                                    ),
-                                    title: Text(user.name),
-                                    subtitle: Text(user.email),
+                                ],
+                              ),
+                              child: ListTile(
+                                onTap: () => Navigator.of(context).pushNamed(
+                                  AppRouter.showinfo,
+                                  arguments: user,
+                                ),
+                                leading: ClipOval(
+                                    child: Image.network(
+                                  user.image,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) =>
+                                      Image.asset(
+                                    ImgPath().logoGit,
+                                    width: 50,
+                                    height: 50,
+                                    fit: BoxFit.cover,
                                   ),
-                                );
-                              },
-                            ),
+                                )),
+                                title: Text(user.name),
+                                subtitle: Text(user.email),
+                              ),
+                            );
+                          },
+                        ),
             )),
           ],
         ),
@@ -161,9 +161,9 @@ class _HomeScreensState extends State<HomeScreens> {
   }
 
   void _showFilterDialog(BuildContext context) {
-    // TODO: column
-    //TODO :mainaxitalingment
-    //TODO: shinkWrap trong ListView.builder
+    //TODO:column
+    //TODO:mainaxitalingment
+    //TODO:shinkWrap trong ListView.builder
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -319,7 +319,7 @@ class _HomeScreensState extends State<HomeScreens> {
                 Navigator.of(context).pop();
                 final homeProvider =
                     Provider.of<HomeProvider>(context, listen: false);
-                await homeProvider.deletaData(user: userRemote);
+                await homeProvider.deleteData(user: userRemote);
                 // bool _deleteSuccess = await _deletaData(id: userRemote.id);
                 if (homeProvider.checkData) {
                   _showDialog(

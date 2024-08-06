@@ -4,22 +4,24 @@ import 'dart:async';
 
 class ConnectProvider extends ChangeNotifier {
   late StreamSubscription<List<ConnectivityResult>> _subscription;
-  String messConnect = '';
+  bool checknet = true;
 
   ConnectProvider() {
     _subscription = Connectivity()
         .onConnectivityChanged
         .listen((List<ConnectivityResult> result) {
-          
-      if (result.contains(ConnectivityResult.wifi)) {
-        messConnect = 'Quay lại trực tuyến \nNgài đang sử dụng wifi !';
-      } else if (result.contains(ConnectivityResult.mobile)) {
-        messConnect = 'Quay lại trực tuyến \nNgài đang sử dụng dữ liệu di động';
-      } else {
-        messConnect = 'Không có kết nối';
-      }
+      checknet = checkConnect(result: result) ? true : false;
       notifyListeners();
     });
+  }
+
+  checkConnect({required List<ConnectivityResult> result}) {
+    if (result.contains(ConnectivityResult.wifi) ||
+        result.contains(ConnectivityResult.mobile)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @override

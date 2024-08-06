@@ -41,34 +41,34 @@ class HomeProvider with ChangeNotifier {
         tmp = await HomeService().getData();
       }
       users = tmp;
-      // await saveUser(users);
-      checkData = true;
+      await saveUser(users);
       _loading = false;
       notifyListeners();
     } catch (e) {
-      checkData = false;
+      users = await loadUserList();
       _loading = false;
       notifyListeners();
     }
   }
 
   // lưu dữ liệu vào bộ nhớ
-  Future<void> saveUser(List<ModelUser> user) async {
+  Future<void> saveUser(List<ModelUser> users) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final users = jsonEncode(user);
-    await prefs.setString('user', users);
+    final String usersJson = jsonEncode(users.map((e) => e.toJSON()).toList());
+    print('dữ liệu $usersJson');
+    await prefs.setString('userList', usersJson);
   }
 
   // đọc dữ liệu từ bộ nhớ
-  Future<List<Map<String, dynamic>>> loadUserList() async {
+  Future<List<ModelUser>> loadUserList() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     // Đọc chuỗi JSON từ SharedPreferences
     String? userListJson = prefs.getString('userList');
     if (userListJson != null) {
-      // Chuyển đổi chuỗi JSON thành danh sách Map<String, dynamic>
+      // chuyển JSON thành Map
       List<dynamic> userListDynamic = jsonDecode(userListJson);
-      List<Map<String, dynamic>> userList =
-          userListDynamic.cast<Map<String, dynamic>>();
+      List<ModelUser> userList =
+          userListDynamic.map((e) => ModelUser.fromJSON(e)).toList();
       return userList;
     } else {
       return [];
@@ -76,11 +76,11 @@ class HomeProvider with ChangeNotifier {
   }
 
   // delete data
-  Future<void> deletaData({required ModelUser user}) async {
+  Future<void> deleteData({required ModelUser user}) async {
     users.remove(user);
     notifyListeners();
     try {
-      await HomeService().deteleData(user.id);
+      await HomeService().deleteData(user.id);
       checkData = true;
     } catch (e) {
       users.add(user);

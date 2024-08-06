@@ -23,7 +23,7 @@ class HomeService extends HomeReponsitory {
   }
 
   @override
-  Future<ModelUser> deteleData(String id) async {
+  Future<ModelUser> deleteData(String id) async {
     try {
       final response = await _restClient.delete('/user/$id');
       if (response is Map<String, dynamic>) {
