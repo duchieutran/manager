@@ -8,11 +8,36 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ConnectivityProvider(),
-      child: const MaterialApp(
-        onGenerateRoute: AppRouter.onGenerateRoute,
-        debugShowCheckedModeBanner: false,
+    return MaterialApp(
+      onGenerateRoute: AppRouter.onGenerateRoute,
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Consumer<NetworkStatus>(
+          builder: (context, networkStatus, child) {
+            return Stack(
+              children: [
+                const Navigator(
+                  onGenerateRoute: AppRouter.onGenerateRoute,
+                ),
+                if (networkStatus == NetworkStatus.offline)
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      color: Colors.red,
+                      padding: const EdgeInsets.all(8.0),
+                      child: const Text(
+                        'No Internet Connection',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

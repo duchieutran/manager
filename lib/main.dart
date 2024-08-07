@@ -12,9 +12,9 @@ void main() {
       ChangeNotifierProvider(create: (context) => HomeProvider()),
       ChangeNotifierProvider(create: (context) => EditProvider()),
       ChangeNotifierProvider(create: (context) => AddProvider()),
-      Provider<ConnectivityProvider>(
-        create: (_) => ConnectivityProvider(),
-      )
+      StreamProvider(
+          create: (context) => ConnectProvider().controller.stream,
+          initialData: NetworkStatus.online)
     ],
     child: const MyApp(),
   ));

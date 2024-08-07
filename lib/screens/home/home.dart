@@ -1,5 +1,3 @@
-import 'package:appdemo/widgets/main_connectivity.dart';
-
 import 'home_tabfeed/home_tabfeed.dart';
 import 'widgets/home_tabbar.dart';
 import 'home_tabhome/home_tabhome.dart';
@@ -63,7 +61,7 @@ class _HomeState extends State<Home> {
               ),
             ),
           ),
-          const ConnectivityStatusWidget()
+          // const ConnectivityStatusWidget()
         ],
       ),
     );
