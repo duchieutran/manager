@@ -170,7 +170,7 @@ class _HomeScreensState extends State<HomeScreens> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
             // final provider = Provider.of<HomeProvider>(context);
-            return Container(
+            return SizedBox(
               height: 300,
               child: Material(
                 child: ListView.builder(

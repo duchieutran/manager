@@ -12,8 +12,8 @@ void main() {
       ChangeNotifierProvider(create: (context) => HomeProvider()),
       ChangeNotifierProvider(create: (context) => EditProvider()),
       ChangeNotifierProvider(create: (context) => AddProvider()),
-      ChangeNotifierProvider(
-        create: (context) => ConnectProvider(),
+      Provider<ConnectivityProvider>(
+        create: (_) => ConnectivityProvider(),
       )
     ],
     child: const MyApp(),

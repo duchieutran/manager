@@ -2,31 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'dart:async';
 
-class ConnectProvider extends ChangeNotifier {
-  late StreamSubscription<List<ConnectivityResult>> _subscription;
-  bool checknet = true;
+class ConnectivityProvider with ChangeNotifier {
+  ConnectivityResult _connectivityResult = ConnectivityResult.none;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
-  ConnectProvider() {
-    _subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((List<ConnectivityResult> result) {
-      checknet = checkConnect(result: result) ? true : false;
+  ConnectivityProvider() {
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+      _connectivityResult = result;
       notifyListeners();
     });
+    _checkConnectivity();
   }
 
-  checkConnect({required List<ConnectivityResult> result}) {
-    if (result.contains(ConnectivityResult.wifi) ||
-        result.contains(ConnectivityResult.mobile)) {
-      return true;
-    } else {
-      return false;
-    }
+  Future<void> _checkConnectivity() async {
+    final result = await Connectivity().checkConnectivity();
+    _connectivityResult = result;
+    notifyListeners();
   }
+
+  ConnectivityResult get connectivityResult => _connectivityResult;
 
   @override
   void dispose() {
-    _subscription.cancel();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 }
