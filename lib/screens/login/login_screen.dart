@@ -1,5 +1,4 @@
 import 'package:appdemo/widgets/main_connectivity.dart';
-
 import '../../global/app_router.dart';
 import '../../global/img_path.dart';
 import 'widgets/login_more.dart';
