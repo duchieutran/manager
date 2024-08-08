@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:appdemo/global/app_router.dart';
 import 'package:appdemo/global/img_path.dart';
 import 'package:appdemo/models/model_user.dart';
+import 'package:appdemo/provider/connect_provider.dart';
 import 'package:appdemo/provider/edit_provider.dart';
 import 'package:appdemo/provider/home_provider.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
@@ -19,7 +20,6 @@ class HomeScreens extends StatefulWidget {
 }
 
 class _HomeScreensState extends State<HomeScreens> {
-  //TODO :: chú ý tên biến
   late final HomeProvider providerInit;
 
   @override
@@ -34,142 +34,130 @@ class _HomeScreensState extends State<HomeScreens> {
 
   @override
   Widget build(BuildContext context) {
-    //TODO:
-    // final checkConnect = context.watch<ConnectProvider>().connectivityResult;
-    return Consumer<HomeProvider>(builder: (context, provider, child) {
-      return Scaffold(
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: TextField(
-                controller: providerInit.searchController, //TODO
-                decoration: InputDecoration(
-                  hintText: 'Search...',
-                  prefixIcon: const Icon(Icons.search),
-                  suffixIcon: IconButton(
-                    icon: const Icon(Icons.filter_list),
-                    onPressed: () {
-                      _showFilterDialog(context);
-                    },
+    return Consumer2<HomeProvider, NetworkStatus>(
+      builder: (context, homeProvider, networdStatus, child) {
+        return Scaffold(
+          body: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: TextField(
+                  controller: providerInit.searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.filter_list),
+                      onPressed: () {
+                        _showFilterDialog(context);
+                      },
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
                   ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
+                  onChanged: (value) {
+                    providerInit.getData(key: providerInit.key, value: value);
+                  },
                 ),
-                onChanged: (value) {
-                  providerInit.getData(key: providerInit.key, value: value);
-                },
               ),
-            ),
-            Expanded(
-                child: Consumer<HomeProvider>(
-              builder: (context, homeProvider, child) => homeProvider
-                      .getLoading()
-                  ? const Center(child: CircularProgressIndicator())
-                  : homeProvider.users.isEmpty
-                      ? const ShowCustomDialog(
-                          title: 'Ôi Đại Vương',
-                          content: 'Đại vương ơi, Không có dữ liệu !')
-                      : ListView.builder(
-                          itemCount: homeProvider.users.length,
-                          itemBuilder: (context, index) {
-                            final user = homeProvider.users[index];
-                            return Slidable(
-                              startActionPane: ActionPane(
-                                motion: const ScrollMotion(),
-                                children: [
-                                  SlidableAction(
-                                    flex: 1,
-                                    onPressed: (context) {
-                                      Navigator.of(context).pushNamed(
-                                          AppRouter.showinfo,
-                                          arguments: user);
-                                    },
-                                    backgroundColor: Colors.blue,
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.info,
-                                    label: 'Thông tin',
-                                  )
-                                ],
-                              ),
-                              endActionPane: ActionPane(
-                                motion: const DrawerMotion(),
-                                children: [
-                                  SlidableAction(
-                                    onPressed: (context) {
-                                      _showEditDialog(context, user);
-                                    },
-                                    backgroundColor: Colors.green,
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.edit,
-                                    label: 'Chỉnh sửa',
-                                  ),
-                                  SlidableAction(
-                                    onPressed: (context) {
-                                      _showCancelDialog(
-                                          context: context, userRemote: user);
-                                    },
-                                    backgroundColor: Colors.red,
-                                    foregroundColor: Colors.white,
-                                    icon: Icons.delete,
-                                    label: 'Xoá',
-                                  ),
-                                ],
-                              ),
-                              child: ListTile(
-                                onTap: () => Navigator.of(context).pushNamed(
-                                  AppRouter.showinfo,
-                                  arguments: user,
+              Expanded(
+                child: homeProvider.getLoading()
+                    ? const Center(child: CircularProgressIndicator())
+                    : homeProvider.users.isEmpty
+                        ? const ShowCustomDialog(
+                            title: 'Ôi Đại Vương',
+                            content: 'Đại vương ơi, Không có dữ liệu !')
+                        : ListView.builder(
+                            itemCount: homeProvider.users.length,
+                            itemBuilder: (context, index) {
+                              final user = homeProvider.users[index];
+                              return Slidable(
+                                startActionPane: ActionPane(
+                                  motion: const ScrollMotion(),
+                                  children: [
+                                    SlidableAction(
+                                      flex: 1,
+                                      onPressed: (context) {
+                                        Navigator.of(context).pushNamed(
+                                            AppRouter.showinfo,
+                                            arguments: user);
+                                      },
+                                      backgroundColor: Colors.blue,
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.info,
+                                      label: 'Thông tin',
+                                    )
+                                  ],
                                 ),
-                                leading: ClipOval(
-                                    child: Image.network(
-                                  user.image,
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      Image.asset(
-                                    ImgPath().logoGit,
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
+                                endActionPane: ActionPane(
+                                  motion: const DrawerMotion(),
+                                  children: [
+                                    SlidableAction(
+                                      onPressed: (context) {
+                                        _showEditDialog(context, user);
+                                      },
+                                      backgroundColor: Colors.green,
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.edit,
+                                      label: 'Chỉnh sửa',
+                                    ),
+                                    SlidableAction(
+                                      onPressed: (context) {
+                                        _showCancelDialog(
+                                            context: context, userRemote: user);
+                                      },
+                                      backgroundColor: Colors.red,
+                                      foregroundColor: Colors.white,
+                                      icon: Icons.delete,
+                                      label: 'Xoá',
+                                    ),
+                                  ],
+                                ),
+                                child: ListTile(
+                                  onTap: () => Navigator.of(context).pushNamed(
+                                    AppRouter.showinfo,
+                                    arguments: user,
                                   ),
-                                )),
-                                title: Text(user.name),
-                                subtitle: Text(user.email),
-                              ),
-                            );
-                          },
-                        ),
-            )),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            Navigator.of(context).pushNamed(AppRouter.addinfo);
-          },
-          backgroundColor: Colors.blue,
-          foregroundColor: Colors.white,
-          child: const Icon(
-            Icons.add,
-            size: 30,
+                                  leading: CircleAvatar(
+                                    backgroundImage:
+                                        networdStatus == NetworkStatus.offline
+                                            ? AssetImage(ImgPath().logoGit)
+                                            : NetworkImage(user.image)
+                                                as ImageProvider,
+                                    radius: 25,
+                                  ),
+                                  title: Text(user.name),
+                                  subtitle: Text(user.email),
+                                ),
+                              );
+                            },
+                          ),
+              ),
+            ],
           ),
-        ),
-      );
-    });
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed(AppRouter.addinfo);
+            },
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
+            child: const Icon(
+              Icons.add,
+              size: 30,
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _showFilterDialog(BuildContext context) {
-    //TODO:column
-    //TODO:mainaxitalingment
-    //TODO:shinkWrap trong ListView.builder
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
-            // final provider = Provider.of<HomeProvider>(context);
             return SizedBox(
               height: 300,
               child: Material(
@@ -320,7 +308,6 @@ class _HomeScreensState extends State<HomeScreens> {
                 final homeProvider =
                     Provider.of<HomeProvider>(context, listen: false);
                 await homeProvider.deleteData(user: userRemote);
-                // bool _deleteSuccess = await _deletaData(id: userRemote.id);
                 if (homeProvider.checkData) {
                   _showDialog(
                       title: 'Tin Mừng', content: 'Chém đầu thành công .');

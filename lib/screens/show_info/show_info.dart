@@ -1,6 +1,8 @@
 import 'package:appdemo/global/app_router.dart';
+import 'package:appdemo/provider/connect_provider.dart';
 import 'package:appdemo/services/api_service/home_sevice.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 import '../../models/model_user.dart';
 import 'widgets/show_info_avatar.dart';
 import 'widgets/show_info_button.dart';
@@ -97,7 +99,10 @@ class ShowInfo extends StatelessWidget {
             ],
           ),
         ),
-        ShowInfoAvatar(image: user.image)
+        Consumer(
+          builder: (context, value, child) => ShowInfoAvatar(
+              image: user.image, check: value == NetworkStatus.offline),
+        )
       ]),
     );
   }

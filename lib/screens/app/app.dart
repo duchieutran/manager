@@ -3,9 +3,14 @@ import 'package:provider/provider.dart';
 import '../../global/app_router.dart';
 import 'package:flutter/material.dart';
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -26,11 +31,17 @@ class MyApp extends StatelessWidget {
                     right: 0,
                     child: Container(
                       color: Colors.red,
-                      padding: const EdgeInsets.all(8.0),
-                      child: const Text(
-                        'No Internet Connection',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.white),
+                      padding: const EdgeInsets.all(5.0),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.public),
+                          Text(
+                            'No Internet Connection',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
                       ),
                     ),
                   ),

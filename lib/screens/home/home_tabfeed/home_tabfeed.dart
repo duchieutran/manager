@@ -1,4 +1,5 @@
 import 'package:appdemo/global/img_path.dart';
+import 'package:appdemo/provider/connect_provider.dart';
 import 'package:appdemo/provider/home_provider.dart';
 import 'package:appdemo/screens/home/home_tabfeed/widgets/feed_textlogo.dart';
 import 'package:appdemo/screens/home/widgets/home_dialog.dart';
@@ -26,8 +27,8 @@ class _FeedSreenState extends State<FeedSreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeProvider>(
-      builder: (context, homeProvider, child) {
+    return Consumer2<HomeProvider, NetworkStatus>(
+      builder: (context, homeProvider, networkStatus, child) {
         return homeProvider.getLoading()
             ? const Center(child: CircularProgressIndicator())
             : homeProvider.users.isEmpty
@@ -63,20 +64,20 @@ class _FeedSreenState extends State<FeedSreen> {
                                     ]),
                                   ),
                                   ClipOval(
-                                      child: Image.network(
-                                    user.image,
-                                    width: 50,
-                                    height: 50,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            Image.asset(
-                                      ImgPath().logoGit,
-                                      width: 50,
-                                      height: 50,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ))
+                                      child:
+                                          networkStatus == NetworkStatus.offline
+                                              ? Image.network(
+                                                  user.image,
+                                                  width: 50,
+                                                  height: 50,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : Image.asset(
+                                                  ImgPath().logoGit,
+                                                  width: 50,
+                                                  height: 50,
+                                                  fit: BoxFit.cover,
+                                                ))
                                 ],
                               ),
                               const SizedBox(
