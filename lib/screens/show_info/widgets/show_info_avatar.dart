@@ -1,6 +1,5 @@
 import 'package:appdemo/global/img_path.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 class ShowInfoAvatar extends StatelessWidget {
   const ShowInfoAvatar({super.key, required this.image, required this.check});
