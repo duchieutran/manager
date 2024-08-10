@@ -55,7 +55,6 @@ class HomeProvider with ChangeNotifier {
   Future<void> saveUser(List<ModelUser> users) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String usersJson = jsonEncode(users.map((e) => e.toJSON()).toList());
-    print('dữ liệu $usersJson');
     await prefs.setString('userList', usersJson);
   }
 

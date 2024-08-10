@@ -65,7 +65,7 @@ class _FeedSreenState extends State<FeedSreen> {
                                   ),
                                   ClipOval(
                                       child:
-                                          networkStatus == NetworkStatus.offline
+                                          networkStatus != NetworkStatus.offline
                                               ? Image.network(
                                                   user.image,
                                                   width: 50,

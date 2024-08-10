@@ -13,41 +13,47 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      onGenerateRoute: AppRouter.onGenerateRoute,
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Consumer<NetworkStatus>(
-          builder: (context, networkStatus, child) {
-            return Stack(
-              children: [
-                const Navigator(
-                  onGenerateRoute: AppRouter.onGenerateRoute,
-                ),
-                if (networkStatus == NetworkStatus.offline)
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    child: Container(
-                      color: Colors.red,
-                      padding: const EdgeInsets.all(5.0),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.public),
-                          Text(
-                            'No Internet Connection',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ],
+    return StreamProvider<NetworkStatus>(
+      create: (_) => ConnectProvider().controller.stream,
+      initialData: NetworkStatus.online,
+      child: MaterialApp(
+        onGenerateRoute: AppRouter.onGenerateRoute,
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          body: Consumer<NetworkStatus>(
+            builder: (context, networkStatus, child) {
+              return Stack(
+                children: [
+                  const Navigator(
+                    onGenerateRoute: AppRouter.onGenerateRoute,
+                  ),
+                  if (networkStatus == NetworkStatus.offline)
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        color: Colors.red,
+                        padding: const EdgeInsets.all(5.0),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.public, color: Colors.white),
+                            SizedBox(
+                                width: 5), // Thêm khoảng cách giữa Icon và Text
+                            Text(
+                              'No Internet Connection',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

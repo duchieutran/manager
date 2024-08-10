@@ -8,6 +8,10 @@ class ConnectProvider {
   StreamController<NetworkStatus> controller = StreamController();
 
   ConnectProvider() {
+    Connectivity().checkConnectivity().then((connectivityResult) {
+      controller.add(_networkStatus(connectivityResult));
+    });
+
     Connectivity().onConnectivityChanged.listen((even) {
       controller.add(_networkStatus(even));
     });

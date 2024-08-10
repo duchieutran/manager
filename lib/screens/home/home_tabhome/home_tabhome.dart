@@ -119,14 +119,21 @@ class _HomeScreensState extends State<HomeScreens> {
                                     AppRouter.showinfo,
                                     arguments: user,
                                   ),
-                                  leading: CircleAvatar(
-                                    backgroundImage:
-                                        networdStatus == NetworkStatus.offline
-                                            ? AssetImage(ImgPath().logoGit)
-                                            : NetworkImage(user.image)
-                                                as ImageProvider,
-                                    radius: 25,
-                                  ),
+                                  leading: ClipOval(
+                                      child:
+                                          networdStatus != NetworkStatus.offline
+                                              ? Image.network(
+                                                  user.image,
+                                                  width: 50,
+                                                  height: 50,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : Image.asset(
+                                                  ImgPath().logoGit,
+                                                  width: 50,
+                                                  height: 50,
+                                                  fit: BoxFit.cover,
+                                                )),
                                   title: Text(user.name),
                                   subtitle: Text(user.email),
                                 ),
