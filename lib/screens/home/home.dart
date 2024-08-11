@@ -17,52 +17,47 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          DefaultTabController(
-            animationDuration: const Duration(seconds: 1),
-            length: 4,
-            child: Scaffold(
-              appBar: MainAppBar(
-                fontSize: 25,
-                colorLeading: Colors.black,
-                kToolbarHeight: 120,
-                title: 'Flutter',
-                showLeading: true,
-                leading: const Icon(Icons.menu),
-                flexiblaSpace: Container(
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Color.fromRGBO(171, 233, 241, 1),
-                        Color.fromARGB(255, 58, 165, 236)
-                      ],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                  ),
-                ),
-                bottom: const TabBar(
-                  tabs: [
-                    HomeTabbar(text: 'Home', icon: Icons.home),
-                    HomeTabbar(text: 'Feed', icon: Icons.list),
-                    HomeTabbar(text: 'Profile', icon: Icons.person),
-                    HomeTabbar(text: 'Settings', icon: Icons.settings),
+      body: DefaultTabController(
+        animationDuration: const Duration(seconds: 1),
+        length: 4,
+        child: Scaffold(
+          appBar: MainAppBar(
+            fontSize: 25,
+            colorLeading: Colors.black,
+            kToolbarHeight: 120,
+            title: 'Flutter',
+            showLeading: true,
+            leading: const Icon(Icons.menu),
+            flexiblaSpace: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromRGBO(171, 233, 241, 1),
+                    Color.fromARGB(255, 58, 165, 236)
                   ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
-              ),
-              body: const TabBarView(
-                children: [
-                  HomeScreens(),
-                  FeedSreen(),
-                  ProfileScreen(),
-                  SettingScreen(),
-                ],
               ),
             ),
+            bottom: const TabBar(
+              tabs: [
+                HomeTabbar(text: 'Home', icon: Icons.home),
+                HomeTabbar(text: 'Feed', icon: Icons.list),
+                HomeTabbar(text: 'Profile', icon: Icons.person),
+                HomeTabbar(text: 'Settings', icon: Icons.settings),
+              ],
+            ),
           ),
-          // const ConnectivityStatusWidget()
-        ],
+          body: const TabBarView(
+            children: [
+              HomeScreens(),
+              FeedSreen(),
+              ProfileScreen(),
+              SettingScreen(),
+            ],
+          ),
+        ),
       ),
     );
   }

@@ -1,8 +1,8 @@
 import 'package:appdemo/global/img_path.dart';
 import 'package:appdemo/provider/connect_provider.dart';
-import 'package:appdemo/provider/home_provider.dart';
 import 'package:appdemo/screens/home/home_tabfeed/widgets/feed_textlogo.dart';
 import 'package:appdemo/screens/home/widgets/home_dialog.dart';
+import 'package:appdemo/stores/home_stores.dart';
 import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
@@ -15,31 +15,29 @@ class FeedSreen extends StatefulWidget {
 }
 
 class _FeedSreenState extends State<FeedSreen> {
+  final HomeStores homeStores = HomeStores();
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final init = Provider.of<HomeProvider>(context, listen: false);
-      init.getData();
-      init.setLoading(true);
-    });
+    homeStores.callGetData();
+    homeStores.setIsloading(true);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<HomeProvider, NetworkStatus>(
-      builder: (context, homeProvider, networkStatus, child) {
-        return homeProvider.getLoading()
+    return Consumer<NetworkStatus>(
+      builder: (context, networkStatus, child) {
+        return homeStores.getIsloading()
             ? const Center(child: CircularProgressIndicator())
-            : homeProvider.users.isEmpty
+            :homeStores.users.isEmpty
                 ? const ShowCustomDialog(
                     title: 'Ôi Đại Vương',
                     content: 'Đại vương ơi, Không có dữ liệu !')
                 // TODO : showDialog
                 : CarouselSlider.builder(
-                    itemCount: homeProvider.users.length,
+                    itemCount: homeStores.users.length,
                     itemBuilder: (context, index, realIndex) {
-                      final user = homeProvider.users[index];
+                      final user = homeStores.users[index];
                       return Card(
                         elevation: 10,
                         color: const Color(0xFF7FCCF0),

@@ -4,11 +4,12 @@ import 'package:appdemo/global/img_path.dart';
 import 'package:appdemo/models/model_user.dart';
 import 'package:appdemo/provider/connect_provider.dart';
 import 'package:appdemo/provider/edit_provider.dart';
-import 'package:appdemo/provider/home_provider.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
 import 'package:appdemo/screens/home/widgets/home_dialog.dart';
+import 'package:appdemo/stores/home_stores.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:provider/provider.dart';
 
@@ -20,29 +21,29 @@ class HomeScreens extends StatefulWidget {
 }
 
 class _HomeScreensState extends State<HomeScreens> {
-  late final HomeProvider providerInit;
+  final HomeStores homeStores = HomeStores();
+  TextEditingController searchController = TextEditingController();
+  String key = 'id';
+  List<String> fillerTitle = ['ID', 'Name', 'Address', 'Age', 'Email'];
 
   @override
   void initState() {
-    providerInit = Provider.of<HomeProvider>(context, listen: false);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      providerInit.setLoading(true);
-      providerInit.getData();
-    });
+    homeStores.callGetData();
+    homeStores.callSetIsLoading(true);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<HomeProvider, NetworkStatus>(
-      builder: (context, homeProvider, networdStatus, child) {
+    return Consumer<NetworkStatus>(
+      builder: (context, networdStatus, child) {
         return Scaffold(
           body: Column(
             children: [
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: TextField(
-                  controller: providerInit.searchController,
+                  controller: searchController,
                   decoration: InputDecoration(
                     hintText: 'Search...',
                     prefixIcon: const Icon(Icons.search),
@@ -57,71 +58,75 @@ class _HomeScreensState extends State<HomeScreens> {
                     ),
                   ),
                   onChanged: (value) {
-                    providerInit.getData(key: providerInit.key, value: value);
+                    homeStores.callGetData(key: key, value: value); // TODO :
                   },
                 ),
               ),
               Expanded(
-                child: homeProvider.getLoading()
-                    ? const Center(child: CircularProgressIndicator())
-                    : homeProvider.users.isEmpty
-                        ? const ShowCustomDialog(
-                            title: 'Ôi Đại Vương',
-                            content: 'Đại vương ơi, Không có dữ liệu !')
-                        : ListView.builder(
-                            itemCount: homeProvider.users.length,
-                            itemBuilder: (context, index) {
-                              final user = homeProvider.users[index];
-                              return Slidable(
-                                startActionPane: ActionPane(
-                                  motion: const ScrollMotion(),
-                                  children: [
-                                    SlidableAction(
-                                      flex: 1,
-                                      onPressed: (context) {
-                                        Navigator.of(context).pushNamed(
-                                            AppRouter.showinfo,
-                                            arguments: user);
-                                      },
-                                      backgroundColor: Colors.blue,
-                                      foregroundColor: Colors.white,
-                                      icon: Icons.info,
-                                      label: 'Thông tin',
-                                    )
-                                  ],
-                                ),
-                                endActionPane: ActionPane(
-                                  motion: const DrawerMotion(),
-                                  children: [
-                                    SlidableAction(
-                                      onPressed: (context) {
-                                        _showEditDialog(context, user);
-                                      },
-                                      backgroundColor: Colors.green,
-                                      foregroundColor: Colors.white,
-                                      icon: Icons.edit,
-                                      label: 'Chỉnh sửa',
+                child: Observer(
+                  builder: (_) => homeStores.getIsloading()
+                      ? const Center(child: CircularProgressIndicator())
+                      : homeStores.users.isEmpty
+                          ? const ShowCustomDialog(
+                              title: 'Ôi Đại Vương',
+                              content: 'Đại vương ơi, Không có dữ liệu !')
+                          : Observer(
+                              builder: (_) => ListView.builder(
+                                itemCount: homeStores.users.length,
+                                itemBuilder: (context, index) {
+                                  final user = homeStores.users[index];
+                                  return Slidable(
+                                    startActionPane: ActionPane(
+                                      motion: const ScrollMotion(),
+                                      children: [
+                                        SlidableAction(
+                                          flex: 1,
+                                          onPressed: (context) {
+                                            Navigator.of(context).pushNamed(
+                                                AppRouter.showinfo,
+                                                arguments: user);
+                                          },
+                                          backgroundColor: Colors.blue,
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.info,
+                                          label: 'Thông tin',
+                                        )
+                                      ],
                                     ),
-                                    SlidableAction(
-                                      onPressed: (context) {
-                                        _showCancelDialog(
-                                            context: context, userRemote: user);
-                                      },
-                                      backgroundColor: Colors.red,
-                                      foregroundColor: Colors.white,
-                                      icon: Icons.delete,
-                                      label: 'Xoá',
+                                    endActionPane: ActionPane(
+                                      motion: const DrawerMotion(),
+                                      children: [
+                                        SlidableAction(
+                                          onPressed: (context) {
+                                            _showEditDialog(context, user);
+                                          },
+                                          backgroundColor: Colors.green,
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.edit,
+                                          label: 'Chỉnh sửa',
+                                        ),
+                                        SlidableAction(
+                                          onPressed: (context) {
+                                            _showCancelDialog(
+                                                context: context,
+                                                userRemote: user);
+                                          },
+                                          backgroundColor: Colors.red,
+                                          foregroundColor: Colors.white,
+                                          icon: Icons.delete,
+                                          label: 'Xoá',
+                                        ),
+                                      ],
                                     ),
-                                  ],
-                                ),
-                                child: ListTile(
-                                  onTap: () => Navigator.of(context).pushNamed(
-                                    AppRouter.showinfo,
-                                    arguments: user,
-                                  ),
-                                  leading: ClipOval(
-                                      child:
-                                          networdStatus != NetworkStatus.offline
+                                    child: ListTile(
+                                      onTap: () =>
+                                          Navigator.of(context).pushNamed(
+                                        AppRouter.showinfo,
+                                        arguments: user,
+                                      ),
+                                      leading: ClipOval(
+                                          child: networdStatus !=
+                                                  NetworkStatus.offline
                                               ? Image.network(
                                                   user.image,
                                                   width: 50,
@@ -134,12 +139,14 @@ class _HomeScreensState extends State<HomeScreens> {
                                                   height: 50,
                                                   fit: BoxFit.cover,
                                                 )),
-                                  title: Text(user.name),
-                                  subtitle: Text(user.email),
-                                ),
-                              );
-                            },
-                          ),
+                                      title: Text(user.name),
+                                      subtitle: Text(user.email),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                ),
               ),
             ],
           ),
@@ -169,16 +176,16 @@ class _HomeScreensState extends State<HomeScreens> {
               height: 300,
               child: Material(
                 child: ListView.builder(
-                  itemCount: providerInit.fillerTitle.length,
+                  itemCount: homeStores.users.length,
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
-                    final title = providerInit.fillerTitle[index];
+                    final title = fillerTitle[index];
                     return RadioListTile(
                       value: title.toLowerCase(),
                       title: Text(title),
-                      groupValue: providerInit.key,
+                      groupValue: homeStores.getKey(),
                       onChanged: (value) {
-                        providerInit.setKey(value!);
+                        homeStores.setKey(key = value as String);
                         Navigator.pop(context);
                       },
                     );
@@ -287,7 +294,7 @@ class _HomeScreensState extends State<HomeScreens> {
               CupertinoDialogAction(
                   child: const Text('Ok'),
                   onPressed: () {
-                    Provider.of<HomeProvider>(context, listen: false).getData();
+                    homeStores.callGetData();
                     Navigator.of(context).pop();
                   })
             ]);
@@ -312,10 +319,8 @@ class _HomeScreensState extends State<HomeScreens> {
             CupertinoDialogAction(
               onPressed: () async {
                 Navigator.of(context).pop();
-                final homeProvider =
-                    Provider.of<HomeProvider>(context, listen: false);
-                await homeProvider.deleteData(user: userRemote);
-                if (homeProvider.checkData) {
+                await homeStores.callRemoveData(user: userRemote);
+                if (homeStores.getIsRemove()) {
                   _showDialog(
                       title: 'Tin Mừng', content: 'Chém đầu thành công .');
                 } else {
