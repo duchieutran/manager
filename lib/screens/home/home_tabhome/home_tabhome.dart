@@ -28,8 +28,9 @@ class _HomeScreensState extends State<HomeScreens> {
 
   @override
   void initState() {
+    // homeStores.callGetData();
+    homeStores.setIsLoading(true);
     homeStores.callGetData();
-    homeStores.callSetIsLoading(true);
     super.initState();
   }
 

@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class HomeStores {
   // Observable
   ObservableList<ModelUser> users = ObservableList<ModelUser>();
-  final Observable<bool> _isLoading =
+  Observable<bool> _isLoading =
       Observable(true); // dùng để load khi tải dữ liệu
   final Observable<bool> _isRemove =
       Observable(false); // dùng để ktra xoá thành công chưa
@@ -27,12 +27,15 @@ class HomeStores {
   // getter and setter
 
   // set _isLoading
-  void setIsloading(bool a) {
-    _isLoading.value = a;
+  void setIsLoading(bool a) {
+    runInAction(() {
+      // TODO: cái này ảo thật đấy ?
+      _isLoading.value = a;
+    });
   }
 
   void callSetIsLoading(bool a) {
-    setIsloading(a);
+    setIsLoading(a);
   }
 
   // get _isLoading
@@ -43,7 +46,11 @@ class HomeStores {
 
   // set key
   @action
-  void setKey(String value) => _key.value = value;
+  void setKey(String value) {
+    runInAction(() {
+      _key.value = value;
+    });
+  }
 
   @action
   void callSetKey(String value) {
@@ -65,10 +72,10 @@ class HomeStores {
       }
       users.addAll(tmp);
       await saveUser(users);
-      setIsloading(false);
+      setIsLoading(false);
     } catch (e) {
       await loadUserList();
-      setIsloading(false);
+      setIsLoading(false);
     }
   }
 
