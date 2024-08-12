@@ -17,4 +17,4 @@ samples, guidance on mobile development, and a full API reference.
 
 
 ## Learn 
-- Ban co huong dan can chinh sua tham khao tai nhanh build_profile, nao ranh update ban moi
+- Bản này learn MobX nhưng mà chưa hoàn chỉnh với các presente khác trừ home, cho nên là xem cứ bình tĩnh nhé.
