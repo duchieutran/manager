@@ -2,7 +2,7 @@ import 'package:appdemo/global/img_path.dart';
 import 'package:appdemo/provider/connect_provider.dart';
 import 'package:appdemo/screens/home/home_tabfeed/widgets/feed_textlogo.dart';
 import 'package:appdemo/screens/home/widgets/home_dialog.dart';
-import 'package:appdemo/stores/home_stores.dart';
+import 'package:appdemo/stores/home_store.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -16,7 +16,7 @@ class FeedSreen extends StatefulWidget {
 }
 
 class _FeedSreenState extends State<FeedSreen> {
-  final HomeStores homeStores = HomeStores();
+  final HomeStore homeStores = HomeStore();
   @override
   @override
   void initState() {
@@ -30,7 +30,7 @@ class _FeedSreenState extends State<FeedSreen> {
     return Consumer<NetworkStatus>(
       builder: (context, networkStatus, child) {
         return Observer(
-          builder: (_) => homeStores.getIsloading()
+          builder: (_) => homeStores.isLoading
               ? const Center(child: CircularProgressIndicator())
               : homeStores.users.isEmpty
                   ? const ShowCustomDialog(

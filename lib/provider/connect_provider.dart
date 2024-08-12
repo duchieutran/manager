@@ -6,6 +6,7 @@ enum NetworkStatus { online, offline }
 
 class ConnectProvider {
   StreamController<NetworkStatus> controller = StreamController();
+  // TODO : 
 
   ConnectProvider() {
     Connectivity().checkConnectivity().then((connectivityResult) {

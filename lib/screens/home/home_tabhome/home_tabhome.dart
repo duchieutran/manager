@@ -6,7 +6,7 @@ import 'package:appdemo/provider/connect_provider.dart';
 import 'package:appdemo/provider/edit_provider.dart';
 import 'package:appdemo/screens/add_info/widgets/add_info_textfield.dart';
 import 'package:appdemo/screens/home/widgets/home_dialog.dart';
-import 'package:appdemo/stores/home_stores.dart';
+import 'package:appdemo/stores/home_store.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -21,7 +21,7 @@ class HomeScreens extends StatefulWidget {
 }
 
 class _HomeScreensState extends State<HomeScreens> {
-  final HomeStores homeStores = HomeStores();
+  final HomeStore homeStores = HomeStore();
   TextEditingController searchController = TextEditingController();
   String key = 'id';
   List<String> fillerTitle = ['ID', 'Name', 'Address', 'Age', 'Email'];
@@ -65,7 +65,7 @@ class _HomeScreensState extends State<HomeScreens> {
               ),
               Expanded(
                 child: Observer(
-                  builder: (_) => homeStores.getIsloading()
+                  builder: (_) => homeStores.isLoading
                       ? const Center(child: CircularProgressIndicator())
                       : homeStores.users.isEmpty
                           ? const ShowCustomDialog(
