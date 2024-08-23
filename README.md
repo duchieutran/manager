@@ -1,20 +1,15 @@
-# appdemo
+# App Quản Lý Sinh Viên
 
-A new Flutter project.
+Quản lý sinh viên với dữ liệu từ API 
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Kiến thức sử dụng
+- Call Api bằng dio, sử dụng full Restful API
+- Sử dụng mockAPI để tạo ra một dữ liệu riêng, thực hiện được các chức năng get, put, post, delete.
+- dùng sharepreference để lưu dữ liệu đệm
+- dùng connectivity_plus để kiểm tra kết nối mạng
+- Dùng Mobx để quản lý State và dùng
+- respository để tạo lại các hàm Call API.
 
 
-## Learn 
-- Ban co huong dan can chinh sua tham khao tai nhanh build_profile, nao ranh update ban moi
+## Tính năng tiếp theo
+- Cập nhật các tính năng tiếp trong các bản khác
